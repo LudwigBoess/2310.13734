@@ -1,4 +1,5 @@
 include(joinpath(@__DIR__, "config.jl"))
+include(joinpath(@__DIR__, "shared.jl"))
 
 @info "loading packages"
 using GadgetIO, GadgetUnits
