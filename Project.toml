@@ -1,0 +1,13 @@
+[deps]
+ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
+GadgetIO = "826b50da-1eb7-48f3-bd4b-d2350582c309"
+GadgetUnits = "08630afb-492b-4c1a-9729-2a116101b53a"
+Healpix = "9f4e344d-96bc-545a-84a3-ae6b9e1b672b"
+ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+PyPlotUtility = "2372c442-b35b-4f55-9072-8f560a2e4af6"
+SpectralCRsUtility = "90310099-bf61-4d54-b5c8-6de8580b0bfc"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+UnitfulAstro = "6112ee07-acf9-5e0f-b108-d242c714bf9f"
