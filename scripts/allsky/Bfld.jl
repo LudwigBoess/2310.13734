@@ -1,3 +1,5 @@
+using Base.Threads
+
 function Bfield_sim(data, i)
     sqrt(data["BFLD"][1, i]^2 + data["BFLD"][2, i]^2 + data["BFLD"][3, i]^2)
 end
@@ -18,6 +20,7 @@ function Bfield_dyn_h(data, i)
     # 10ng in filaments full dynamo scaling from Ulli's paper
     1.e-8 * sqrt(rho * 3e7)
 end
+
 
 # function Bfield_Caretti(data, i)
 #     rho = data["RHO"][i] * GU.rho_ncm3
