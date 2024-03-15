@@ -13,37 +13,37 @@ inset_locator = pyimport("mpl_toolkits.axes_grid1.inset_locator")
 axes_divider = pyimport("mpl_toolkits.axes_grid1.axes_divider")
 @info "done"
 
-function plot_phase_maps(data_path, plot_name)
+function plot_phase_maps(phase_map_path, plot_name)
 
     Bfield_models = [L"B_\mathrm{sim}",
-        L"B_{\beta = 50}",
-        L"B_{\mathcal{F} = 0.1}",
+        L"B_{\beta}",
+        L"B_{\mathcal{F}}",
         L"B_\mathrm{ff}",
         L"B_\mathrm{dyn ↓}",
         L"B_\mathrm{dyn ↑}"]
 
-    filename = data_path .* ["box/phase_map_synch_emissivity_144MHz_$B.dat"
+    filename = phase_map_path .* ["box/phase_map_synch_emissivity_144MHz_$B.dat"
                              for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
         "B_FF", "B_dyn_l", "B_dyn_h"]
     ]
 
-    filename_1D = data_path .* ["box/bin_1D_synch_emissivity_144MHz_$B.dat"
+    filename_1D = phase_map_path .* ["box/bin_1D_synch_emissivity_144MHz_$B.dat"
                                 for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
         "B_FF", "B_dyn_l", "B_dyn_h"]
     ]
 
-    filename_1D_zoom = data_path .* ["zoom_inj/bin_1D_synch_emissivity_144MHz_$B.dat"
+    filename_1D_zoom = phase_map_path .* ["zoom_inj/bin_1D_synch_emissivity_144MHz_$B.dat"
                                      for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
         "B_FF", "B_dyn_l", "B_dyn_h"]
     ]
 
-    filename_1D_zoom_Dpp_low = data_path .* ["zoom_dpp_low/bin_1D_synch_emissivity_144MHz_$B.dat"
+    filename_1D_zoom_Dpp_low = phase_map_path .* ["zoom_dpp_low/bin_1D_synch_emissivity_144MHz_$B.dat"
                                              for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
         "B_FF", "B_dyn_l", "B_dyn_h"]
     ]
 
 
-    filename_1D_zoom_Dpp_high = data_path .* ["zoom_dpp_high/bin_1D_synch_emissivity_144MHz_$B.dat"
+    filename_1D_zoom_Dpp_high = phase_map_path .* ["zoom_dpp_high/bin_1D_synch_emissivity_144MHz_$B.dat"
                                               for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
         "B_FF", "B_dyn_l", "B_dyn_h"]
     ]
@@ -187,8 +187,8 @@ function plot_phase_maps(data_path, plot_name)
     close(fig)
 end
 
-data_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/phase_maps/"
+phase_map_path = data_path * "phase_maps_new/"
 plot_name = plot_path * "Fig08.pdf"
 
-plot_phase_maps(data_path, plot_name)
+plot_phase_maps(phase_map_path, plot_name)
 
