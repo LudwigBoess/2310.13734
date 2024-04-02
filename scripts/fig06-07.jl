@@ -11,16 +11,16 @@ using StatsBase
 cm = pyimport("cmasher")
 @info "done"
 
-function plot_10Mpc_col(map_path, folders)
+function plot_10Mpc_col(folders)
 
-    filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
+    filenames = "144MHz_" .* ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
 
-    snaps = ["036", "012", "074", "012", "074"]
+    snaps = ["036", "012", "074", "012", "012"]
 
     Ncols = length(filenames)
     Nrows = 5
 
-    files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_$filename.xz.fits"
+    files = [map_path * "coma/$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_$filename.xz.fits"
              for i ∈ 1:Nrows, filename ∈ filenames]
 
 
@@ -36,8 +36,8 @@ function plot_10Mpc_col(map_path, folders)
 
 
     annotate_time = trues(Nrows * Ncols)
-    time_labels = [txt for _ = 1:Nrows, txt ∈ [L"B_\mathrm{sim}", L"B_{\beta = 50}",
-        L"B_{\mathcal{F} = 0.1}", L"B_\mathrm{ff}",
+    time_labels = [txt for _ = 1:Nrows, txt ∈ [L"B_\mathrm{sim}", L"B_{\beta}",
+        L"B_{\mathcal{F}}", L"B_\mathrm{ff}",
         L"B_\mathrm{dyn ↓}", L"B_\mathrm{dyn ↑}"]
     ]
 
@@ -53,7 +53,7 @@ function plot_10Mpc_col(map_path, folders)
     scale_kpc = 5_000.0
     scale_label = "5 Mpc"
 
-    plot_name = plot_path * "Fig05.pdf"
+    plot_name = plot_path * "Fig06.pdf"
 
     plot_image_grid(Nrows, Ncols, files, im_cmap, cb_labels,
         vmin_arr, vmax_arr, plot_name,
@@ -75,21 +75,21 @@ function plot_10Mpc_col(map_path, folders)
 end
 
 
-map_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/maps/"
 folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
-plot_10Mpc_col(map_path * "coma/", folders)
+plot_10Mpc_col(folders)
 
 
-function plot_10Mpc_slope(map_path, folders)
+function plot_10Mpc_slope(folders)
+
 
     filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
 
-    snaps = ["036", "012", "074", "012", "074"]
+    snaps = ["036", "012", "074", "012", "012"]
 
     Ncols = length(filenames)
     Nrows = 5
 
-    files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_slope_$filename.xz.fits"
+    files = [map_path * "coma/$(folders[i])/coma_20Mpc_$(snaps[i]).synch_slope_$filename.xz.fits"
              for i ∈ 1:Nrows, filename ∈ filenames]
 
     vmin_arr = [-3.0]
@@ -97,12 +97,12 @@ function plot_10Mpc_slope(map_path, folders)
 
     im_cmap = ["Spectral_r"]
 
-    cb_labels = ["Synchrotron Spectral Slope  " * L"\alpha_\mathrm{144 MHz}^\mathrm{944 MHz}"]
+    cb_labels = ["Synchrotron Spectral Slope  " * L"\alpha_\mathrm{144 MHz}^\mathrm{1.4 GHz}"]
 
 
     annotate_time = trues(Nrows * Ncols)
-    time_labels = [txt for _ = 1:Nrows, txt ∈ [L"B_\mathrm{sim}", L"B_{\beta = 50}",
-        L"B_{\mathcal{F} = 0.1}", L"B_\mathrm{ff}",
+    time_labels = [txt for _ = 1:Nrows, txt ∈ [L"B_\mathrm{sim}", L"B_{\beta}",
+        L"B_{\mathcal{F}}", L"B_\mathrm{ff}",
         L"B_\mathrm{dyn ↓}", L"B_\mathrm{dyn ↑}"]
     ]
 
@@ -119,7 +119,7 @@ function plot_10Mpc_slope(map_path, folders)
     scale_label = "5 Mpc"
     circle_color = "gray"
 
-    plot_name = plot_path * "Fig06.pdf"
+    plot_name = plot_path * "Fig07a.pdf"
 
     plot_image_grid(Nrows, Ncols, files, im_cmap, cb_labels,
         vmin_arr, vmax_arr, plot_name,
@@ -143,9 +143,8 @@ function plot_10Mpc_slope(map_path, folders)
 end
 
 
-map_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/maps/"
 folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
-plot_10Mpc_slope(map_path *  "coma/", folders)
+plot_10Mpc_slope(folders)
 
 
 """
@@ -193,7 +192,7 @@ function read_data(α_file, jν_file)
     println("pixels above threshold: ", length(findall(map[sel] .> -0.5)))
 
     if length(findall(map[sel] .> -0.5)) > 0
-        println(map[findall(map[sel] .> -0.5)])
+        println("value of pixels: ", map[findall(map[sel] .> -0.5)])
     end
 
     w = AnalyticWeights(ones(length(sel)))
@@ -207,16 +206,16 @@ function read_data(α_file, jν_file)
     return bin_centers, hist, hist_w
 end
 
-function plot_slope_histograms(map_path, folders, plot_name)
+function plot_slope_histograms(folders, plot_name)
 
     Bfield_models = [L"B_\mathrm{sim}",
-        L"B_{\beta = 50}",
-        L"B_{\mathcal{F} = 0.1}",
+        L"B_{\beta}",
+        L"B_{\mathcal{F}}",
         L"B_\mathrm{ff}",
         L"B_\mathrm{dyn ↓}",
         L"B_\mathrm{dyn ↑}"]
 
-    snaps = ["036", "012", "074", "012", "074"]
+    snaps = ["036", "012", "074", "012", "012"]
 
 
     Bfield_filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
@@ -253,7 +252,7 @@ function plot_slope_histograms(map_path, folders, plot_name)
         ax.set_xticklabels([-3.0, -2.5, -2.0, -1.5, -1.0, -0.5])
 
         if col == 3
-            xlabel("Synchrotron Spectral Slope  " * L"\alpha_\mathrm{144 MHz}^\mathrm{944 MHz}",
+            xlabel("Synchrotron Spectral Slope  " * L"\alpha_\mathrm{144 MHz}^\mathrm{1.4 GHz}",
                     fontsize=legend_font_size)
             ax.xaxis.set_label_coords(0.8, -0.05)
         end
@@ -265,8 +264,8 @@ function plot_slope_histograms(map_path, folders, plot_name)
         end
 
         for i_sim = 1:length(sim_names)-1
-            α_file = map_path * "$(folders[i_sim])/coma_20Mpc_$(snaps[i_sim]).synch_slope_$(Bfield_filenames[col]).xz.fits"
-            jν_file = map_path * "$(folders[i_sim])/coma_20Mpc_$(snaps[i_sim]).synch_F_beam_1'_$(Bfield_filenames[col]).xz.fits"
+            α_file = map_path * "coma/$(folders[i_sim])/coma_20Mpc_$(snaps[i_sim]).synch_slope_$(Bfield_filenames[col]).xz.fits"
+            jν_file = map_path * "coma/$(folders[i_sim])/coma_20Mpc_$(snaps[i_sim]).synch_F_beam_1'_144MHz_$(Bfield_filenames[col]).xz.fits"
             
             bins, hist, hist_w = read_data(α_file, jν_file)
             hist ./= sum(hist)
@@ -279,8 +278,8 @@ function plot_slope_histograms(map_path, folders, plot_name)
                 linestyle=":")
         end
 
-        α_file  = map_path * "$(folders[end])/coma_20Mpc_$(snaps[end]).synch_slope_$(Bfield_filenames[col]).xz.fits"
-        jν_file = map_path * "$(folders[end])/coma_20Mpc_$(snaps[end]).synch_F_beam_1'_$(Bfield_filenames[col]).xz.fits"
+        α_file  = map_path * "coma/$(folders[end])/coma_20Mpc_$(snaps[end]).synch_slope_$(Bfield_filenames[col]).xz.fits"
+        jν_file = map_path * "coma/$(folders[end])/coma_20Mpc_$(snaps[end]).synch_F_beam_1'_144MHz_$(Bfield_filenames[col]).xz.fits"
 
         bins, hist, hist_w = read_data(α_file, jν_file)
         hist ./= sum(hist)
@@ -313,24 +312,22 @@ function plot_slope_histograms(map_path, folders, plot_name)
     close(fig)
 end
 
-map_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/maps/coma/"
 folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
-plot_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/Plots/"
-plot_name = plot_path * "Fig06b.pdf"
+plot_name = plot_path * "Fig07b.pdf"
 
-plot_slope_histograms(map_path, folders, plot_name)
+plot_slope_histograms(folders, plot_name)
 
-filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
+# filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
 
-snaps = ["036", "012", "074", "012", "074"]
+# snaps = ["036", "012", "074", "012", "074"]
 
-Ncols = length(filenames)
-Nrows = 5
+# Ncols = length(filenames)
+# Nrows = 5
 
-α_files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_slope_$filename.xz.fits"
-         for i ∈ 1:Nrows, filename ∈ filenames]
+# α_files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_slope_$filename.xz.fits"
+#          for i ∈ 1:Nrows, filename ∈ filenames]
 
-jν_files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_$filename.xz.fits"
-             for i ∈ 1:Nrows, filename ∈ filenames]
+# jν_files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_$filename.xz.fits"
+#              for i ∈ 1:Nrows, filename ∈ filenames]
 
 
