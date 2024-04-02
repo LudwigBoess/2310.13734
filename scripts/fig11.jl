@@ -188,7 +188,7 @@ function plot_phase_maps(phase_map_path, plot_name)
 end
 
 phase_map_path = data_path * "phase_maps_new/"
-plot_name = plot_path * "Fig08.pdf"
+plot_name = plot_path * "Fig11.pdf"
 
 plot_phase_maps(phase_map_path, plot_name)
 
