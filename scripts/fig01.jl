@@ -17,7 +17,7 @@ Plot text annotations for clusters in the given list of `clusters` on the curren
 function plot_text_clusters(ax, clusters)
 
     for cl ∈ clusters
-        txt = ax.text(cl.i, cl.j, cl.name, fontsize=20, color="w")
+        txt = ax.text(cl.xpix, cl.ypix, cl.name, fontsize=12, color="w")
         txt.set_path_effects([PE.withStroke(linewidth=2, foreground="k")])
     end
 
@@ -36,9 +36,9 @@ struct ClusterAnnotation
 end
 
 
-cluster = [ClusterAnnotation("A1644", 2560 - 250, 1479 - 30),
+cluster = [ClusterAnnotation("A1644", 2560 - 200, 1479 - 30),
     ClusterAnnotation("A85", 3787 - 2448, 194 - 80),
-    ClusterAnnotation("A119", 3678 - 2048 - 950, 266),
+    ClusterAnnotation("A119", 3678 - 2000 - 950, 266),
     ClusterAnnotation("A347", 285 + 30, 967 - 30),
     ClusterAnnotation("A496", 3039 - 50, 306 - 100),
     ClusterAnnotation("A539", 3937 + 20, 1024),
@@ -54,12 +54,12 @@ cluster = [ClusterAnnotation("A1644", 2560 - 250, 1479 - 30),
     ClusterAnnotation("A2065", 283 + 1300, 1789 + 30),
     ClusterAnnotation("A2107", 1007 + 570, 1631),
     ClusterAnnotation("A2199", 1231 + 300, 1474 - 90),
-    ClusterAnnotation("A2256", 441 + 300, 1540 - 30),
-    ClusterAnnotation("A1736", 2639 - 250, 1359 - 50),
+    ClusterAnnotation("A2256", 441 + 350, 1540 - 30),
+    ClusterAnnotation("A1736", 2639 - 220, 1359 - 50),
     ClusterAnnotation("A2593", 22 + 1300, 289 - 30),
-    ClusterAnnotation("A2634", 553 + 50, 629),
+    ClusterAnnotation("A2634", 553 + 110, 629),
     ClusterAnnotation("A2665", 3918 - 3000, 526 - 30),
-    ClusterAnnotation("A2734", 3636 - 1900, 92 + 50),
+    ClusterAnnotation("A2734", 3636 - 1900, 92 + 30),
     ClusterAnnotation("A2877", 3233 - 1130, 45),
     ClusterAnnotation("A3266", 3074 - 250, 493 - 30),
     ClusterAnnotation("A3571", 2688 - 80, 1285 - 80),
@@ -80,7 +80,9 @@ cluster = [ClusterAnnotation("A1644", 2560 - 250, 1479 - 30),
     ClusterAnnotation("2A0335+096", 295, 444)]
 
 
-dpi = 100
+overplot_function(ax) = plot_text_clusters(ax, cluster)
+
+dpi = 300
 file_ending = "pdf"
 contour_file = map_path * "allsky/cluster_contours_slow_1_gal.fits"
 
@@ -101,12 +103,13 @@ plot_single_allsky(filename, im_cmap, cb_label, clim_arr, plot_name,
     contour_linestyle="-",
     contour_alpha=1.0,
     contour_color="w",
-    annotations=cluster,
+    #annotations=cluster,
     dpi=dpi,
     cutoff=clim_arr[1],
     origin="lower"
     ;
-    contour_file
+    contour_file,
+    overplot_function
 )
 
 
@@ -126,7 +129,10 @@ plot_single_allsky(filename, im_cmap, cb_label, clim_arr, plot_name,
     contour_linestyle="-",
     contour_alpha=1.0,
     contour_color="w",
+    #annotations=cluster,
     dpi=dpi,
     cutoff=clim_arr[1],
-    origin="lower"
+    origin="lower";
+    #contour_file,
+    #overplot_function
 )
