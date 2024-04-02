@@ -132,7 +132,7 @@ c_lim = [1.e11, 1.e16]
 contour_limits = [1.e53, 1.e59]
 contour_label = L"E_\mathrm{CR,e > 1 GeV}" * " [erg]"
 
-plot_name = plot_path * "Fig07.pdf"
+plot_name = plot_path * "Fig10.pdf"
 
 plot_phase_map(phase_map, x_lim, y_lim, c_lim, "Blues_r", contour_map, 
                 contour_limits, contour_label, plot_name)
