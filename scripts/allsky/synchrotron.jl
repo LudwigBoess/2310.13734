@@ -18,17 +18,17 @@ function get_synchrotron(data, nu, Bfield_function, show_progress=false)
 
     @threads for i ∈ eachindex(j_ν)
 
-        d = 0.0
-        @inbounds for dim = 1:3
-            d += (data["POS"][dim, i] - center_comov[dim])^2
-        end
+        # d = 0.0
+        # @inbounds for dim = 1:3
+        #     d += (data["POS"][dim, i] - center_comov[dim])^2
+        # end
 
-        d = sqrt(d) * GU.x_physical
+        # d = sqrt(d) * GU.x_physical
 
-        if d < radius_limits[1] || d > radius_limits[2]
-            j_ν[i] = 0.0
-            continue
-        end
+        # if d < radius_limits[1] || d > radius_limits[2]
+        #     j_ν[i] = 0.0
+        #     continue
+        # end
 
         norm = GU.CR_norm .* 10.0 .^ data["CReN"][:, i]
 
@@ -44,6 +44,8 @@ function get_synchrotron(data, nu, Bfield_function, show_progress=false)
 
         if show_progress
             next!(P)
+            flush(stdout)
+            flush(stderr)
         end
     end
 

@@ -51,12 +51,17 @@ function write_slope_image(map_base, snap, Bname)
 
 end
 
+global const map_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/maps/"
+
+
 Bnames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
-folders = "coma/" * ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]  .* "/"
-snaps = ["036", "012", "074", "012", "012"]
+folders = "coma/" .* ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07",
+        "dt_fix"]  .* "/"
+snaps = ["036", "012", "074", "012", "012",
+        "012"]
 
 
-for i ∈ 5:length(folders), Bname ∈ Bnames 
+for i ∈ 6:length(folders), Bname ∈ Bnames 
     println(folders[i], " ", Bname)
     write_slope_image(map_path * folders[i], snaps[i], Bname)
 end

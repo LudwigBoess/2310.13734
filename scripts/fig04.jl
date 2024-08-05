@@ -13,7 +13,7 @@ function plot_general_quantities(map_path, folders)
 
     filenames = ["rho", "B", "CReE_gt1GeV_L", "D0_max"]
 
-    snaps = ["036", "012"]
+    snaps = ["036", "074"]
 
     Ncols = length(filenames)
     Nrows = 2
@@ -41,10 +41,10 @@ function plot_general_quantities(map_path, folders)
     #r_circles = [2642.8608, 1837.9205]
     r_circles = [3895.850659851734, 2709.2852602308144]
 
-    vmin_arr = [1.e-4, 2.e-4, 8.e48, 4e-18]
-    vmax_arr = [1.e-1, 8.0, 4.e53, 1.e-15]
+    vmin_arr = [1.e-4, 2.e-4, 2.e48, 2e-18]
+    vmax_arr = [1.e-2, 8.0, 4.e53, 1.e-16]
 
-    plot_name = plot_path * "fig04.pdf"
+    plot_name = plot_path * "fig04_new.pdf"
 
     plot_image_grid(Nrows, Ncols, files, im_cmap, cb_labels,
         vmin_arr, vmax_arr, plot_name, upscale=1.2,
@@ -63,5 +63,5 @@ function plot_general_quantities(map_path, folders)
 
 end
 
-folders = ["box", "zoom_inj"]
+folders = ["box", "zoom_inj_new"]
 plot_general_quantities(map_path * "coma/", folders)

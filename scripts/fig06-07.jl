@@ -15,7 +15,7 @@ function plot_10Mpc_col(folders)
 
     filenames = "144MHz_" .* ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
 
-    snaps = ["036", "012", "074", "012", "012"]
+    snaps = ["036", "074", "074", "012", "012"]
 
     Ncols = length(filenames)
     Nrows = 5
@@ -75,7 +75,7 @@ function plot_10Mpc_col(folders)
 end
 
 
-folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
+folders = ["box", "zoom_inj_new", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
 plot_10Mpc_col(folders)
 
 
@@ -84,7 +84,7 @@ function plot_10Mpc_slope(folders)
 
     filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
 
-    snaps = ["036", "012", "074", "012", "012"]
+    snaps = ["036", "074", "074", "012", "012"]
 
     Ncols = length(filenames)
     Nrows = 5
@@ -143,7 +143,7 @@ function plot_10Mpc_slope(folders)
 end
 
 
-folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
+folders = ["box", "zoom_inj_new", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
 plot_10Mpc_slope(folders)
 
 
@@ -215,7 +215,7 @@ function plot_slope_histograms(folders, plot_name)
         L"B_\mathrm{dyn ↓}",
         L"B_\mathrm{dyn ↑}"]
 
-    snaps = ["036", "012", "074", "012", "012"]
+    snaps = ["036", "074", "074", "012", "012"]
 
 
     Bfield_filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
@@ -312,7 +312,7 @@ function plot_slope_histograms(folders, plot_name)
     close(fig)
 end
 
-folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
+folders = ["box", "zoom_inj_new", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
 plot_name = plot_path * "Fig07b.pdf"
 
 plot_slope_histograms(folders, plot_name)

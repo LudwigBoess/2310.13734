@@ -6,8 +6,10 @@ using ProgressMeter
 using Base.Threads
 using DelimitedFiles
 
-
 struct CR
+    rho::Float64
+    B::Float64
+    Mach::Float64
     spec::CRMomentumDistribution
     j_nu::Vector{Float64}
 end
@@ -50,12 +52,12 @@ end
 
 function read_data(snap)
 
-    sim_path = "/mnt/home/lboess/ceph/LocalUniverse/Coma/L5/mhd_cr8p24eDpp/"
+    sim_path = "/path/to/zoom/"
     snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
     save_file = sim_path * "read_positions/max_CReP_ids_$(@sprintf("%03i", snap)).dat"
 
     read_positions = load_read_positions(save_file)
-    blocks = ["BFLD", "CReN", "CReS", "CReC"]
+    blocks = ["RHO", "BFLD", "MACH", "CReN", "CReS", "CReC"]
 
     return read_blocks_filtered(snap_base, blocks; read_positions), read_header(snap_base)
 end
@@ -70,59 +72,31 @@ end
 
 
 function convert_data(data, h, i)
-    return CR(construct_spectrum(data, i), get_synch_power(data, h, i))
+    GU = GadgetPhysical(h)
+    rho = data["RHO"][i] * GU.rho_cgs
+    B = @. √( data["BFLD"][1, i]^2 +
+              data["BFLD"][2, i]^2 +
+              data["BFLD"][3, i]^2)
+    Mach = Float64(data["MACH"][i])
+    return CR(rho, B, Mach, construct_spectrum(data, i), get_synch_power(data, h, i))
 end
 
-
-
-
-# function write_spectra(spectra, id)
-#     Nfiles = size(spectra, 2)
-#     filename = "/mnt/home/lboess/ceph/LocalUniversePapers/zooms/coma/data/spectra_$id.dat"
-#     f = open(filename)
-#     write(f, Nfiles)
-#     for Nfile ∈ 1:Nfiles
-#         write(f, spectra[Nfile].spec.bound)
-#         write(f, spectra[Nfile].spec.norm)
-#         write(f, spectra[Nfile].j_nu)
-#     end
-#     close(f)
-# end
-
-# function run(snap_range)
-
-#     ids = [ 549847351403, 549834206059, 549816871198, 549822811914, 549834873392, 549850851667,
-#         549837820882, 549784127556, 549848445311, 549782540344, 549813136996, 549890489504,
-#         549836262508, 549849186219, 549888791935, 549815238762, 549849858007, 549771151247,
-#         549778132736, 549839258204, 549835496070, 549856547328, 549839327739 ]
-
-#     for (Nid, id) ∈ enumerate(ids)
-
-#         spectra = Vector{CR}(undef, length(snap_range))
-
-#         for (i, snap) ∈ enumerate(snap_range)
-
-#             @info "snap $snap"
-#             data, header = read_data(snap)
-#             spectra[i] = convert_data(data, header, Nid)
-#             data = nothing
-#             header = nothing
-#         end
-
-#         write_spectra(spectra, id)
-#     end
-# end
 
 function write_spectra(spectra, ids)
 
     Nids = length(ids)
     Nfiles = size(spectra, 2)
-    filename = "/mnt/home/lboess/ceph/LocalUniversePapers/zooms/coma/data/spectra.dat"
+    filename = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/spectra_549816871198.dat"
     f = open(filename, "w")
     write(f, Nids)
     write(f, ids)
     write(f, Nfiles)
     for Nfile ∈ 1:Nfiles, Nid ∈ 1:Nids
+        # particle quantities
+        write(f, spectra[Nid, Nfile].rho)
+        write(f, spectra[Nid, Nfile].B)
+        write(f, spectra[Nid, Nfile].Mach)
+        # cr quantities
         write(f, spectra[Nid, Nfile].spec.bound)
         write(f, spectra[Nid, Nfile].spec.norm)
         write(f, spectra[Nid, Nfile].j_nu)
@@ -135,13 +109,14 @@ function run(snap_range)
 
     @info "running on $(nthreads()) threads"
 
+    # selected via maximum of CReP at snap = 70
     ids = [549847351403, 549834206059, 549816871198, 549822811914, 549834873392, 549850851667,
         549837820882, 549784127556, 549848445311, 549782540344, 549813136996, 549890489504,
         549836262508, 549849186219, 549888791935, 549815238762, 549849858007, 549771151247,
         549778132736, 549839258204, 549835496070, 549856547328, 549839327739]
 
 
-    spectra = Matrix{CR}(undef, 23, length(snap_range))
+    spectra = Matrix{CR}(undef, length(ids), length(snap_range))
 
     for (i, snap) ∈ enumerate(snap_range)
         @info "snap $snap"
@@ -155,7 +130,7 @@ function run(snap_range)
     write_spectra(spectra, ids)
 end
 
-#run(0:73)
+run(38:73)
 
 function write_times(snap_range)
 
@@ -163,15 +138,15 @@ function write_times(snap_range)
 
     for (i, snap) ∈ enumerate(snap_range)
         @info "snap $snap"
-        sim_path = "/mnt/home/lboess/ceph/LocalUniverse/Coma/L5/mhd_cr8p24eDpp/"
+        sim_path = "/path/to/zoom/"
         snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
 
         h = read_header(snap_base)
         t[i] = age(h)
     end
 
-    fo = "/mnt/home/lboess/ceph/LocalUniversePapers/zooms/coma/data/times.txt"
+    fo = data_path * "times.txt"
     writedlm(fo, t)
 end
 
-write_times(0:73)
+write_times(38:73)

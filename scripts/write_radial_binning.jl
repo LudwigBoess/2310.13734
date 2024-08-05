@@ -3,7 +3,9 @@ using PyPlot, PyPlotUtility
 using Printf
 using DelimitedFiles
 
-include(joinpath(@__DIR__, "allsky", "Bfld.jl"))
+const global GU = GadgetPhysical(read_header("/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/mhd_cr8p24eDpp_1e-17/snapdir_074/snap_074.0"))
+
+include(joinpath(@__DIR__,  "allsky", "Bfld.jl"))
 
 function get_r(data, GU)
     
@@ -79,6 +81,21 @@ snap = 36
 
 data_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/radial_B/box/"
 
+data = read_data(sim_path, snap, true)
+
+Bfield_functions = [Bfield_sim, Bfield_Beta, 
+    Bfield_vturb,
+    Bfield_FF, Bfield_dyn_l, Bfield_dyn_h,
+    Bfield_dyn_l_new]
+Bfield_names = ["B_sim", "B_beta", 
+    "B_vturb_rescaled",
+    "B_FF_rescaled", "B_dyn_l_rescaled", "B_dyn_h_rescaled",
+    "B_dyn_l_rescaled_new"]
+
+for i = 7:7#1:length(Bfield_functions)
+    write_binning(data_path * Bfield_names[i] * ".dat", data, Bfield_functions[i])
+end
+
 function run()
 
     folders = ["zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_inj"]
@@ -93,10 +110,16 @@ function run()
 
         data = read_data(sim_paths[j], snaps[j], false)
 
-        Bfield_functions = [Bfield_sim, Bfield_Beta, Bfield_vturb, Bfield_FF, Bfield_dyn_l, Bfield_dyn_h]
-        Bfield_names = ["B_sim", "B_beta", "B_vturb", "B_FF", "B_dyn_l", "B_dyn_h"]
+        Bfield_functions = [Bfield_sim, Bfield_Beta, 
+                            Bfield_vturb, 
+                            Bfield_FF, Bfield_dyn_l, Bfield_dyn_h,
+                            Bfield_dyn_l_new]
+        Bfield_names = ["B_sim", "B_beta", 
+                        "B_vturb_rescaled",
+                        "B_FF_rescaled", "B_dyn_l_rescaled", "B_dyn_h_rescaled",
+                        "B_dyn_l_rescaled_new"]
 
-        for i = 1:length(Bfield_functions)
+        for i = 7:7#1:length(Bfield_functions)
             write_binning(data_paths[j] * Bfield_names[i] * ".dat", data, Bfield_functions[i])
         end
 
@@ -106,28 +129,27 @@ end
 
 run()
 
-folders = [#"zoom_dpp_1e-17", "zoom_dpp_5e-17", 
-            "zoom_inj"]
-data_paths = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/radial_B/" .* folders .* "/"
+# folders = [#"zoom_dpp_1e-17", "zoom_dpp_5e-17", 
+#             "zoom_inj"]
+# data_paths = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/radial_B/" .* folders .* "/"
 
-sim_paths = "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/" .* [
-    #"mhd_cr8p24eDpp_1e-17/", "mhd_cr8p24eDpp_5e-17/", 
-    "mhd_cr8p24e/"]
+# sim_paths = "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/" .* [
+#     #"mhd_cr8p24eDpp_1e-17/", "mhd_cr8p24eDpp_5e-17/", 
+#     "mhd_cr8p24e/"]
 
-snaps = [#74, 12, 
-        12]
+# snaps = [#74, 12, 
+#         12]
 
-const global GU = GadgetPhysical(read_header("/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/mhd_cr8p24eDpp_1e-17/snapdir_074/snap_074.0"))
 
-for j = 1:length(data_paths)
+# for j = 1:length(data_paths)
 
-    data = read_data(sim_paths[j], snaps[j], false)
+#     data = read_data(sim_paths[j], snaps[j], false)
 
-    Bfield_functions = [Bfield_sim, Bfield_Beta, Bfield_vturb, Bfield_FF, Bfield_dyn_l, Bfield_dyn_h]
-    Bfield_names = ["B_sim", "B_beta", "B_vturb", "B_FF", "B_dyn_l", "B_dyn_h"]
+#     Bfield_functions = [Bfield_sim, Bfield_Beta, Bfield_vturb, Bfield_FF, Bfield_dyn_l, Bfield_dyn_h]
+#     Bfield_names = ["B_sim", "B_beta", "B_vturb", "B_FF", "B_dyn_l", "B_dyn_h"]
 
-    for i = 1:length(Bfield_functions)
-        write_binning(data_paths[j] * Bfield_names[i] * ".dat", data, Bfield_functions[i])
-    end
+#     for i = 1:length(Bfield_functions)
+#         write_binning(data_paths[j] * Bfield_names[i] * ".dat", data, Bfield_functions[i])
+#     end
 
-end
+# end
