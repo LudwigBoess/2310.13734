@@ -10,7 +10,7 @@ using StatsBase
 using PyPlot, PyPlotUtility
 
 
-const global h = read_header("/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/mhd_cr8p24eDpp_5e-17/snapdir_012/snap_012.0")
+const global h = read_header("/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L4/cr6p16e/snapdir_011/snap_011.0")
 const global GU = GadgetPhysical(h)
 
 
@@ -115,18 +115,18 @@ function write_histograms(snap_base, sim_name, use_keys, Bfield_function, Nbins=
     writedlm(data_file, d)
 end
 
-snap_bases = ["/gpfs/work/pn68va/di67meg/LocalUniverse/snapdir_036/snap_036",
-    "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/mhd_cr8p24e/snapdir_012/snap_012",
-    "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/mhd_cr8p24eDpp_1e-17/snapdir_074/snap_074",
-    "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/mhd_cr8p24eDpp_5e-17/snapdir_012/snap_012"]
+snap_bases = ["/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L4/cr6p16e/snapdir_011/snap_011",
+    "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/cr6p16e/snapdir_000/snap_000",
+    "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/cr6p16e_Dpp_low/snapdir_000/snap_000",
+    "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/cr6p16e_Dpp_high/snapdir_000/snap_000"]
 
 sim_names = ["box", "zoom_inj", "zoom_dpp_low", "zoom_dpp_high"]
-use_keys = [true, false, false, false]
+use_keys = [false, false, false, false]
 Bfield_functions = [Bfield_sim, Bfield_FF, Bfield_Beta, Bfield_vturb, Bfield_dyn_l, Bfield_dyn_h]
 Bfield_names = ["sim", "ff", "beta", "vturb", "dyn_l", "dyn_h"]
 
 # for i in 1:length(snap_bases)
-#     for j = 5:5#1:length(Bfield_functions)
+#     for j = 1:length(Bfield_functions)
 #         write_histograms(snap_bases[i], sim_names[i] * "_" * Bfield_names[j], use_keys[i], Bfield_functions[j])
 #     end
 # end
@@ -179,7 +179,6 @@ function plot_histograms(sim_names, Bfield_names, plot_name)
         end
         ax.set_ylabel(L"N/N_\mathrm{tot}")
 
-        axvline(log10(3.2e-6), color="k", linestyle="--", label=L"B_\mathrm{CMB}")
         text(-11.5, 1.0, sim_labels[i+1], fontsize=16, horizontalalignment="left")
 
         for j = 1:length(Bfield_models)
@@ -189,6 +188,7 @@ function plot_histograms(sim_names, Bfield_names, plot_name)
             plot(data[:,1], data[:,2] ./ sum(data[:,2]), label=Bfield_models[j],
                 color=sm2.to_rgba(j), lw=2)
         end
+        axvline(log10(3.2e-6), color="k", linestyle="--", label=L"B_\mathrm{CMB}")
 
         ax.xaxis.set_major_locator(plt.LinearLocator(5))
 
