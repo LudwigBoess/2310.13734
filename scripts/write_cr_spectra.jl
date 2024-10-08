@@ -14,7 +14,7 @@ end
 
 
 function get_synch_power(data, h, i;
-    pmin=1.e-1, pmax=1.e5)
+    pmin=1.0, pmax=1.e5)
 
     GU = GadgetPhysical(h)
 

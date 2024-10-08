@@ -15,12 +15,12 @@ cm = pyimport("cmasher")
 
 
 
-Bfield_names = ["B_sim", "B_beta", 
-    "B_vturb_rescaled",
-    "B_FF_rescaled", "B_dyn_l_rescaled", "B_dyn_h_rescaled"]
+Bfield_names = ["Bsim", "beta50", 
+    "01Pturb",
+    "BFF", "dyn_l", "dyn_h"]
 
 
-files = @. map_path * "coma/zoom_dpp_1e-17/coma_5Mpc_$(@sprintf("%03i", 74)).RM_" * Bfield_names * ".a.y.fits"
+files = @. map_path * "zoom_inj/coma_5Mpc_$(@sprintf("%03i", 74)).RM_" * Bfield_names * ".xz.fits"
 
 Ncols = length(Bfield_names)
 Nrows = 1
@@ -57,7 +57,7 @@ plot_name = plot_path * "Fig5a.pdf"
 #     ticks_color="k",
 #     annotation_color="k",
 #     colorbar_mode="single",
-#     read_mode=4;
+#     read_mode=1;
 #     time_labels, annotate_time,
 #     log_map,
 #     annotate_scale,
@@ -79,15 +79,14 @@ function plot_radial_B(plot_name)
         L"B_\mathrm{dyn ↑}"]
 
     Bfield_names = ["B_sim", "B_beta", "B_vturb", "B_FF", "B_dyn_l", "B_dyn_h"]
-    folders = "radial_B/" .* ["box", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_inj"]
+    folders = "radial_B/" .* ["box", "zoom_inj", "zoom_dpp"]
 
-    sim_names = ["SLOW-CR3072", "Coma", "Coma-" * L"D_\mathrm{pp}" * "-Low",
-        "Coma-" * L"D_\mathrm{pp}" * "-High"]
+    sim_names = ["SLOW-CR3072", "Coma", "Coma-" * L"D_\mathrm{pp}"]
 
     bonafede = readdlm(data_path * "bonafede_sorted.dat")
 
     sm2 = plt.cm.ScalarMappable(cmap=PyPlot.cm.magma,
-        norm=plt.Normalize(vmin=0, vmax=4.5))
+        norm=plt.Normalize(vmin=0, vmax=3.5))
     sm2.set_array([])
 
     alpha_ref = 1.0
@@ -123,38 +122,38 @@ function plot_radial_B(plot_name)
             ax.set_yticklabels([])
         end
 
-        if col <= 2
+        # if col <= 2
 
-            for i_sim = 1:length(sim_names)
+        #     for i_sim = 1:length(sim_names)
 
-                fi = data_path * "/" * folders[i_sim] * "/" * Bfield_names[col] * ".dat"
-                d = readdlm(fi)
-                plot(d[:,1], 1.e6 .* d[:,2], 
-                    alpha=alpha_ref,
-                    color=sm2.to_rgba(i_sim), lw=lw,
-                    label=sim_names[i_sim])
+        #         fi = data_path * "/" * folders[i_sim] * "/" * Bfield_names[col] * ".dat"
+        #         d = readdlm(fi)
+        #         plot(d[:,1], 1.e6 .* d[:,2], 
+        #             alpha=alpha_ref,
+        #             color=sm2.to_rgba(i_sim), lw=lw,
+        #             label=sim_names[i_sim])
 
-            end
-        end
+        #     end
+        # end
 
 
-        if 3 <= col <= 4
+        # if 3 <= col <= 4
 
-            for i_sim = 2:2#length(sim_names)
+        #     for i_sim = 2:2#length(sim_names)
 
-                fi = data_path * "/" * folders[i_sim] * "/" * Bfield_names[col] * ".dat"
-                d = readdlm(fi)
-                plot(d[:,1], 1.e6 .* d[:,2], 
-                    alpha=alpha_ref,
-                    color=sm2.to_rgba(i_sim), lw=lw,
-                    linestyle="--")
+        #         fi = data_path * "/" * folders[i_sim] * "/" * Bfield_names[col] * ".dat"
+        #         d = readdlm(fi)
+        #         plot(d[:,1], 1.e6 .* d[:,2], 
+        #             alpha=alpha_ref,
+        #             color=sm2.to_rgba(i_sim), lw=lw,
+        #             linestyle="--")
 
-            end
-        end
+        #     end
+        # end
 
         for i_sim = 1:length(sim_names)
 
-            fi = data_path * "/" * folders[i_sim] * "/" * Bfield_names[col] * "_rescaled.dat"
+            fi = data_path * "/" * folders[i_sim] * "/" * Bfield_names[col] * ".dat"
 
             if !isfile(fi)
                 continue
@@ -176,14 +175,14 @@ function plot_radial_B(plot_name)
 
     end
 
-    legend(frameon=false, bbox_to_anchor=(-2.0, -0.4), ncol=5, loc="lower center")
+    legend(frameon=false, bbox_to_anchor=(-2.0, -0.4), ncol=4, loc="lower center")
 
     subplots_adjust(hspace=0.0, wspace=0.0)
     savefig(plot_name, bbox_inches="tight", transparent=false)
     close(fig)
 end
 
-folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
+folders = ["box", "zoom_inj", "zoom_dpp"]
 plot_name = plot_path * "Fig05b.pdf"
 
 plot_radial_B(plot_name)

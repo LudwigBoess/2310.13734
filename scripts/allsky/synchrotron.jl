@@ -10,7 +10,7 @@ function get_synchrotron(data, nu, Bfield_function, show_progress=false)
 
     # cr setup 
     Nbins = size(data["CReN"], 1)
-    par = CRMomentumDistributionConfig(0.1, 1.e5, Nbins)
+    par = CRMomentumDistributionConfig(1.0, 1.e5, Nbins)
 
     if show_progress
         P = Progress(Npart)
@@ -80,6 +80,8 @@ function synch_maps_of_subfile(subfile, Bfield_function, Btype)
         center, kernel, Nside)
 
     println("\tmap done!\n\tmaximum = $(maximum(map[1])) erg/s/Hz/cm^2\n\tsum = $(sum(map[1])) erg/s/Hz/cm^2")
+    println("\tAvailable Memory: $(Sys.free_memory() / 2^20) MB -> $( Sys.free_memory() / Sys.total_memory() * 100) %")
+
     flush(stdout)
     flush(stderr)
 

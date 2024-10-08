@@ -15,12 +15,12 @@ function plot_10Mpc_col(folders)
 
     filenames = "144MHz_" .* ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
 
-    snaps = ["036", "012", "074", "012", "012"]
+    snaps = ["011", "074", "074", "074"]
 
     Ncols = length(filenames)
-    Nrows = 5
+    Nrows = length(folders)
 
-    files = [map_path * "coma/$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_$filename.xz.fits"
+    files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_$filename.xz.fits"
              for i ∈ 1:Nrows, filename ∈ filenames]
 
 
@@ -43,9 +43,8 @@ function plot_10Mpc_col(folders)
 
     time_labels[1] = L"B_\mathrm{sim}" * "\n" * "SLOW-CR3072" * L"^3"
     time_labels[2] = "Coma"
-    time_labels[3] = "Coma-" * L"D_\mathrm{pp}" * "-Low"
-    time_labels[4] = "Coma-" * L"D_\mathrm{pp}" * "-High"
-    time_labels[5] = "H&B (2007)"
+    time_labels[3] = "Coma-" * L"D_\mathrm{pp}"
+    time_labels[4] = "H&B (2007)"
 
     log_map = trues(Nrows * Ncols)
     annotate_scale = trues(Nrows * Ncols)
@@ -59,7 +58,7 @@ function plot_10Mpc_col(folders)
         vmin_arr, vmax_arr, plot_name,
         cutoffs=[vmin_arr[1] for i = 1:Ncols],
         mask_bad=trues(Nrows * Ncols),
-        upscale=0.6,
+        upscale=0.8,
         cb_label_offset=0.6,
         dpi=400,
         transparent=false,
@@ -75,8 +74,8 @@ function plot_10Mpc_col(folders)
 end
 
 
-folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
-plot_10Mpc_col(folders)
+folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
+#plot_10Mpc_col(folders)
 
 
 function plot_10Mpc_slope(folders)
@@ -84,12 +83,12 @@ function plot_10Mpc_slope(folders)
 
     filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
 
-    snaps = ["036", "012", "074", "012", "012"]
+    snaps = ["011", "074", "074", "074"]
 
     Ncols = length(filenames)
-    Nrows = 5
+    Nrows = length(folders)
 
-    files = [map_path * "coma/$(folders[i])/coma_20Mpc_$(snaps[i]).synch_slope_$filename.xz.fits"
+    files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_slope_$filename.xz.fits"
              for i ∈ 1:Nrows, filename ∈ filenames]
 
     vmin_arr = [-3.0]
@@ -99,7 +98,6 @@ function plot_10Mpc_slope(folders)
 
     cb_labels = ["Synchrotron Spectral Slope  " * L"\alpha_\mathrm{144 MHz}^\mathrm{1.4 GHz}"]
 
-
     annotate_time = trues(Nrows * Ncols)
     time_labels = [txt for _ = 1:Nrows, txt ∈ [L"B_\mathrm{sim}", L"B_{\beta}",
         L"B_{\mathcal{F}}", L"B_\mathrm{ff}",
@@ -108,9 +106,8 @@ function plot_10Mpc_slope(folders)
 
     time_labels[1] = L"B_\mathrm{sim}" * "\n" * "SLOW-CR3072" * L"^3"
     time_labels[2] = "Coma"
-    time_labels[3] = "Coma-" * L"D_\mathrm{pp}" * "-Low"
-    time_labels[4] = "Coma-" * L"D_\mathrm{pp}" * "-High"
-    time_labels[5] = "H&B (2007)"
+    time_labels[3] = "Coma-" * L"D_\mathrm{pp}"
+    time_labels[4] = "H&B (2007)"
 
     log_map = falses(Nrows * Ncols)
     annotate_scale = trues(Nrows * Ncols)
@@ -125,7 +122,7 @@ function plot_10Mpc_slope(folders)
         vmin_arr, vmax_arr, plot_name,
         cutoffs=[vmin_arr[1] for i = 1:Ncols],
         mask_bad=trues(Nrows * Ncols),
-        upscale=0.6,
+        upscale=0.8,
         cb_label_offset=0.6,
         dpi=400,
         transparent=false,
@@ -143,8 +140,8 @@ function plot_10Mpc_slope(folders)
 end
 
 
-folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
-plot_10Mpc_slope(folders)
+folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
+#plot_10Mpc_slope(folders)
 
 
 """
@@ -215,17 +212,16 @@ function plot_slope_histograms(folders, plot_name)
         L"B_\mathrm{dyn ↓}",
         L"B_\mathrm{dyn ↑}"]
 
-    snaps = ["036", "012", "074", "012", "012"]
+    snaps = ["011", "074", "074", "074"]
 
 
     Bfield_filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
 
 
-    sim_names = ["SLOW-CR3072", "Coma", "Coma-" * L"D_\mathrm{pp}" * "-Low",
-        "Coma-" * L"D_\mathrm{pp}" * "-High", "H&B (2007)"]
+    sim_names = ["SLOW-CR3072", "Coma", "Coma-" * L"D_\mathrm{pp}", "H&B (2007)"]
 
     sm2 = plt.cm.ScalarMappable(cmap=PyPlot.cm.magma,
-        norm=plt.Normalize(vmin=0, vmax=4.5))
+        norm=plt.Normalize(vmin=0, vmax=3.5))
     sm2.set_array([])
 
     alpha_ref = 1.0
@@ -264,8 +260,8 @@ function plot_slope_histograms(folders, plot_name)
         end
 
         for i_sim = 1:length(sim_names)-1
-            α_file = map_path * "coma/$(folders[i_sim])/coma_20Mpc_$(snaps[i_sim]).synch_slope_$(Bfield_filenames[col]).xz.fits"
-            jν_file = map_path * "coma/$(folders[i_sim])/coma_20Mpc_$(snaps[i_sim]).synch_F_beam_1'_144MHz_$(Bfield_filenames[col]).xz.fits"
+            α_file = map_path * "$(folders[i_sim])/coma_20Mpc_$(snaps[i_sim]).synch_slope_$(Bfield_filenames[col]).xz.fits"
+            jν_file = map_path * "$(folders[i_sim])/coma_20Mpc_$(snaps[i_sim]).synch_F_beam_1'_144MHz_$(Bfield_filenames[col]).xz.fits"
             
             bins, hist, hist_w = read_data(α_file, jν_file)
             hist ./= sum(hist)
@@ -278,8 +274,8 @@ function plot_slope_histograms(folders, plot_name)
                 linestyle=":")
         end
 
-        α_file  = map_path * "coma/$(folders[end])/coma_20Mpc_$(snaps[end]).synch_slope_$(Bfield_filenames[col]).xz.fits"
-        jν_file = map_path * "coma/$(folders[end])/coma_20Mpc_$(snaps[end]).synch_F_beam_1'_144MHz_$(Bfield_filenames[col]).xz.fits"
+        α_file  = map_path * "$(folders[end])/coma_20Mpc_$(snaps[end]).synch_slope_$(Bfield_filenames[col]).xz.fits"
+        jν_file = map_path * "$(folders[end])/coma_20Mpc_$(snaps[end]).synch_F_beam_1'_144MHz_$(Bfield_filenames[col]).xz.fits"
 
         bins, hist, hist_w = read_data(α_file, jν_file)
         hist ./= sum(hist)
@@ -303,16 +299,16 @@ function plot_slope_histograms(folders, plot_name)
     plot([0.0], [0.0], color="k", lw=lw, linestyle=":", label=L"\sum \: j_\nu")
 
     handles, labels = gca().get_legend_handles_labels()
-    order = [1, 6, 2, 7, 3, 4, 5]
+    order = [1, 2, 3, 4, 5, 6]
     l = legend([handles[idx] for idx in order], [labels[idx] for idx in order],
-        frameon=false, bbox_to_anchor=(-2.0, -0.5), ncol=5, loc="lower center")
+        frameon=false, bbox_to_anchor=(-2.0, -0.5), ncol=6, loc="lower center")
 
     subplots_adjust(hspace=0.0, wspace=0.0)
     savefig(plot_name, bbox_inches="tight", transparent=false)
     close(fig)
 end
 
-folders = ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]
+folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
 plot_name = plot_path * "Fig07b.pdf"
 
 plot_slope_histograms(folders, plot_name)

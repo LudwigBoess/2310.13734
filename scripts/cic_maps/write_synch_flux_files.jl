@@ -2,8 +2,9 @@ using SPHtoGrid
 using GadgetIO, GadgetUnits
 using Unitful, UnitfulAstro
 
-const global sim_path = "path/to/sim/"
-fi = sim_path * "snapdir_036/snap_036"
+const global sim_path = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L4/cr6p16e_tricco/"
+const global map_path = "/gpfs/work/pn36ze/di93son/PaperRepos/2310.13734/maps/"
+fi = sim_path * "snapdir_011/snap_011"
 h = read_header(fi)
 c = cosmology(h)
 
@@ -22,22 +23,23 @@ println(smooth_size)
 filenames = ["Bsim", "beta50", "01Pturb", "BFF", 
             "dyn_l", "dyn_h"]
 
-folders = "coma/" .* ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"] .* "/"
-snaps = ["036", "012", "074", "012", "012"]
+folders = ["box", "zoom_inj"#, "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"
+            ] .* "/"
+snaps = ["011", "074"]
 
 files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_Inu_144MHz_$filename.xz.fits"
          for i ∈ 1:length(snaps), filename ∈ filenames]
 out_files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_144MHz_$filename.xz.fits"
              for i ∈ 1:length(snaps), filename ∈ filenames]
 
-for i = 1:length(files)
-    println(i)
-    image, par, snap, units = read_fits_image(files[i])
-    map_P = synchrotron_SB_to_luminosity(image, par)
-    map_F = convert_Pnu_map_to_mJy_beam(map_P, par.pixelSideLength, beam, c, z_coma)
-    println(maximum(map_F))
-    write_fits_image(out_files[i], map_F, par, units="mJy/beam"; snap)
-end
+# for i = 1:length(files)
+#     println(i)
+#     image, par, snap, units = read_fits_image(files[i])
+#     map_P = synchrotron_SB_to_luminosity(image, par)
+#     map_F = convert_Pnu_map_to_mJy_beam(map_P, par.pixelSideLength, beam, c, z_coma) .* 100.0
+#     println(maximum(map_F))
+#     write_fits_image(out_files[i], map_F, par, units="mJy/beam"; snap)
+# end
 
 
 """
@@ -48,20 +50,15 @@ using SPHtoGrid
 using GadgetUnits
 using Unitful, UnitfulAstro
 
-folders = "coma/" * ["zoom_inj"]
-snaps = ["012"]
+folders = ["box", "zoom_inj"]
+snaps = ["011", "074"]
 
-files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[1]).CReE_gt1GeV.xz.fits"
+files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).CReE_gt1GeV.xz.fits"
          for i ∈ 1:length(folders)]
 
-out_files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[1]).CReE_gt1GeV_L.xz.fits"
+out_files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).CReE_gt1GeV_L.xz.fits"
              for i ∈ 1:length(folders)]
 
-fi = map_path * "coma/box/coma_20Mpc_036.CReE_gt1GeV_L.xz.fits"
-
-image, par, snap, units = read_fits_image(fi)
-
-sum(image)
 
 for i = 1:length(files)
     image, par, snap, units = read_fits_image(files[i])

@@ -1,2 +1,4 @@
 maps/*
 Plots/*
+scripts/allsky/log/*
+scripts/allsky/allsky.slurm

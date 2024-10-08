@@ -7,8 +7,8 @@ try
     addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))
 catch err
     if isa(err, KeyError)
-        println("allocating 4 normal tasks")
-        addprocs(4)
+        println("allocating 2 normal tasks")
+        addprocs(2)
     end
 end
 
@@ -30,10 +30,10 @@ using SpectralCRsUtility
 const global center_comov = [247.980, 245.480, 255.290] .* 1.e3
 const global radius_limits = [0.0, Inf]
 
-const global data_path = "path/to/maps/"
-const global sim_path = "/path/to/sim/"
+const global data_path = "/gpfs/work/pn36ze/di93son/PaperRepos/2310.13734/maps/zoom_HB/"
+const global sim_path = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/cr6p20e/"
 
-const global snap = 36
+const global snap = 74
 const global snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
 const global GU = GadgetPhysical(read_header(snap_base))
 
@@ -50,7 +50,7 @@ function make_synch_maps(snap, cluster, gpos, side_length, scale, map_type)
 
     # default
     image_path = data_path * "$(cluster)_$(scale)_$(@sprintf("%03i", snap))."
-    data = read_particles_in_volume(snap_base, blocks, gpos, side_length, use_keys=true)
+    data = read_particles_in_volume(snap_base, blocks, gpos, side_length, use_keys=false)
 
     println("done")
     flush(stdout)
@@ -82,7 +82,6 @@ function make_synch_maps(snap, cluster, gpos, side_length, scale, map_type)
 
 
     units = "erg/s/Hz/cm^2"
-    synch = "synch_Inu_144MHz"
     factor = ones(length(m_cgs))
     weights = part_weight_physical(length(rho_cgs), param)
     flux = false
@@ -90,8 +89,10 @@ function make_synch_maps(snap, cluster, gpos, side_length, scale, map_type)
 
 
     z_coma = 0.0231
-    # nu = 1.4e9 * ( 1 + z_coma )
+    #nu = 1.4e9 * ( 1 + z_coma )
+    #synch = "synch_Inu_1.4GHz"
     nu = 144.0e6 * (1 + z_coma)
+    synch = "synch_Inu_144MHz"
 
     # Synch
     println("B sim")
@@ -206,7 +207,7 @@ function get_CReE(data, GU)
 
     # cr setup 
     Nbins = size(data["CReN"], 1)
-    par = CRMomentumDistributionConfig(0.1, 1.e5, Nbins)
+    par = CRMomentumDistributionConfig(10.0, 1.e5, Nbins)
     bounds = momentum_bin_boundaries(par)
 
     p = Progress(Npart)
@@ -349,7 +350,7 @@ function make_HB_synch_maps(snap, cluster, gpos, side_length, scale, map_type)
 
     # default
     image_path = data_path * "$(cluster)_$(scale)_$(@sprintf("%03i", snap))."
-    data = read_particles_in_volume(snap_base, blocks, gpos, side_length, use_keys=true)
+    data = read_particles_in_volume(snap_base, blocks, gpos, side_length, use_keys=false)
 
     println("done")
     flush(stdout)
@@ -378,7 +379,7 @@ function make_HB_synch_maps(snap, cluster, gpos, side_length, scale, map_type)
         x_size=xy_size * GU.x_physical,
         y_size=xy_size * GU.x_physical,
         z_size=z_size * GU.x_physical,
-        Npixels=2048)
+        Npixels=1024)
 
     units = "erg/s/Hz/cm^2"
     synch = "synch_Inu_HB_144MHz"
@@ -565,8 +566,8 @@ cluster = "coma"
 side_length = 0.1 * 100.0e3
 
 # SB 
-make_synch_maps(snap, cluster, gpos, side_length, "20Mpc", "SB")
-# make_HB_synch_maps(snap, cluster, gpos, side_length, "20Mpc", "SB")
+#make_synch_maps(snap, cluster, gpos, side_length, "20Mpc", "SB")
+make_HB_synch_maps(snap, cluster, gpos, side_length, "20Mpc", "SB")
 
 # quantities
 #make_quantity_maps(snap, cluster, gpos, side_length, "20Mpc")
