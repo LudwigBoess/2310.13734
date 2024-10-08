@@ -100,7 +100,6 @@ function plot_10Mpc_slope(folders)
 
     cb_labels = ["Synchrotron Spectral Slope  " * L"\alpha_\mathrm{144 MHz}^\mathrm{1.4 GHz}"]
 
-
     annotate_time = trues(Nrows * Ncols)
     time_labels = [txt for _ = 1:Nrows, txt ∈ [L"B_\mathrm{sim}", L"B_{\beta}",
         L"B_{\mathcal{F}}", L"B_\mathrm{ff}",

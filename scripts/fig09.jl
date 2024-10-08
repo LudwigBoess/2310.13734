@@ -22,7 +22,7 @@ end
 
 function read_spectra()
 
-    filename = data_path * "spectra.dat"
+    filename = data_path * "spectra_073.dat"
     f = open(filename, "r")
     Nids = read(f, Int64)
     ids = read!(f, Vector{UInt64}(undef, Nids))

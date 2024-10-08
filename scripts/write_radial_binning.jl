@@ -77,14 +77,14 @@ end
 sim_path = "/gpfs/work/pn68va/di67meg/LocalUniverse/"
 snap = 36
 
-data_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/radial_B/box/"
+data_path = "/gpfs/work/pn36ze/di93son/PaperRepos/2310.13734/data/radial_B/box/"
 
 function run()
 
     folders = ["zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_inj"]
-    data_paths = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/radial_B/" .* folders .* "/"
+    data_paths = "/gpfs/work/pn36ze/di93son/PaperRepos/2310.13734/data/radial_B/" .* folders .* "/"
 
-    sim_paths = "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/" .* [
+    sim_paths = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/" .* [
         "mhd_cr8p24eDpp_1e-17/", "mhd_cr8p24eDpp_5e-17/", "mhd_cr8p24e/"]
 
     snaps = [74, 12, 12]
@@ -104,20 +104,18 @@ function run()
 
 end
 
-run()
+#run()
 
-folders = [#"zoom_dpp_1e-17", "zoom_dpp_5e-17", 
-            "zoom_inj"]
-data_paths = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/radial_B/" .* folders .* "/"
+folders = ["box", "zoom_inj", "zoom_dpp"]
+data_paths = "/gpfs/work/pn36ze/di93son/PaperRepos/2310.13734/data/radial_B/" .* folders .* "/"
 
-sim_paths = "/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/" .* [
-    #"mhd_cr8p24eDpp_1e-17/", "mhd_cr8p24eDpp_5e-17/", 
-    "mhd_cr8p24e/"]
+sim_paths = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/" .* [
+    "L4/cr6p20e_frankenstein",
+    "L5/cr6p20e", "L5/cr6p20eDpp"] .* "/"
 
-snaps = [#74, 12, 
-        12]
+snaps = [11, 74, 74]
 
-const global GU = GadgetPhysical(read_header("/gpfs/work/pn68va/di67meg/LocalUniverseZoom/Coma/L5/mhd_cr8p24eDpp_1e-17/snapdir_074/snap_074.0"))
+const global GU = GadgetPhysical(read_header("/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/cr6p20e/snapdir_074/snap_074.0"))
 
 for j = 1:length(data_paths)
 
