@@ -23,6 +23,9 @@ println("loading packages")
 @everywhere using Base.Threads
 @everywhere using Statistics
 @everywhere using ProgressMeter
+@everywhere using ThreadPinning
+pinthreads(:cores)
+
 println("done")
 flush(stdout);
 flush(stderr);
@@ -42,12 +45,15 @@ elseif ARGS[1] == "dyn_h"
 end
 
 
-@everywhere const snap = 36
-@everywhere const global sim_path = "path/to/simulation/"
+@everywhere const snap = 74
+@everywhere const global sim_path = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/cr6p20eDpp/"
 @everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
 @everywhere const global GU = GadgetPhysical(GadgetIO.read_header(snap_base))
 
-@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "box")
+@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "zoom_dpp")
+
+@everywhere global const center_comov = zeros(3)
+@everywhere const global radius_limits = [0.0, Inf]
 
 @everywhere include(joinpath(@__DIR__, "bin_1D.jl"))
 @everywhere include(joinpath(@__DIR__, "..", "allsky", "Bfld.jl"))
@@ -138,17 +144,17 @@ end
 @everywhere function get_synch_phase_map_filename()
 
     if Bfield_flag == 1
-        return map_path * "bin_1D_synch_emissivity_144MHz_B_sim.dat"
+        return map_path * "/bin_1D_synch_emissivity_144MHz_B_sim.dat"
     elseif Bfield_flag == 2
-        return map_path * "bin_1D_synch_emissivity_144MHz_B_beta50.dat"
+        return map_path * "/bin_1D_synch_emissivity_144MHz_B_beta50.dat"
     elseif Bfield_flag == 3
-        return map_path * "bin_1D_synch_emissivity_144MHz_B_01Pturb.dat"
+        return map_path * "/bin_1D_synch_emissivity_144MHz_B_01Pturb.dat"
     elseif Bfield_flag == 4
-        return map_path * "bin_1D_synch_emissivity_144MHz_B_FF.dat"
+        return map_path * "/bin_1D_synch_emissivity_144MHz_B_FF.dat"
     elseif Bfield_flag == 5
-        return map_path * "bin_1D_synch_emissivity_144MHz_B_dyn_l.dat"
+        return map_path * "/bin_1D_synch_emissivity_144MHz_B_dyn_l.dat"
     elseif Bfield_flag == 6
-        return map_path * "bin_1D_synch_emissivity_144MHz_B_dyn_h.dat"
+        return map_path * "/bin_1D_synch_emissivity_144MHz_B_dyn_h.dat"
     end
 
 end

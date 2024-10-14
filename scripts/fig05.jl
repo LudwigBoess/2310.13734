@@ -44,7 +44,7 @@ annotate_scale = trues(Nrows * Ncols)
 scale_kpc = 1_000.0
 scale_label = "1 Mpc"
 
-plot_name = plot_path * "Fig5a.pdf"
+plot_name = plot_path * "Fig05a.pdf"
 
 # plot_image_grid(Nrows, Ncols, files, im_cmap, cb_labels,
 #     vmin_arr, vmax_arr, plot_name,

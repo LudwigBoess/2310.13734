@@ -13,7 +13,7 @@ function plot_general_quantities(map_path, folders)
 
     filenames = ["rho", "B", "CReE_gt1GeV_L", "D0_max"]
 
-    snaps = ["011", "074"]
+    snaps = ["000", "074"]
 
     Ncols = length(filenames)
     Nrows = 2
