@@ -77,7 +77,7 @@ end
 
 
 folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
-#plot_10Mpc_col(folders)
+plot_10Mpc_col(folders)
 
 
 function plot_10Mpc_slope(folders)
@@ -312,5 +312,5 @@ end
 folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
 plot_name = plot_path * "Fig07b.pdf"
 
-plot_slope_histograms(folders, plot_name)
+#plot_slope_histograms(folders, plot_name)
 

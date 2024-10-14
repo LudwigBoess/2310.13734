@@ -6,9 +6,10 @@
 # Pkg.activate(dir_path);
 
 # simulation settings
-const global sim_path = "/dss/dssfs02/pr62go/pr62go-dss-0001/Local/3072/nonrad_mhd_crs/"
-const global snap = 36
-const global snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+#const global sim_path = "/dss/dssfs02/pr62go/pr62go-dss-0001/Local/3072/nonrad_mhd_crs/"
+#const global snap = 36
+#const global snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+const global snap_base = "/dss/dssfs02/pr62go/pr62go-dss-0001/Local/3072/mhd_crs_new/snapdir_000_z=0-03/snap_000"
 
 # general map settings
 const global Nside = 1024

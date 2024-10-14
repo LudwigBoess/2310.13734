@@ -62,10 +62,16 @@ function run_Bfld_map_of_subfile(subfile, blocks, Bfld_function, Btype)
         calc_mean=false;
         center, kernel, Nside)
 
+    sel = findall(map[2] .> 0.0)
+    println("\tmap done!\n\tmaximum = $(maximum(map[1][sel]./map[2][sel])) G")
+    println("\tBefore GC: Available Memory: $(Sys.free_memory() / 2^20) MB -> $( Sys.free_memory() / Sys.total_memory() * 100) %")
+
     pos = hsml = rho = m = nothing
     B = nothing
     data = nothing
     GC.gc()
+    println("\tAfter GC: Available Memory: $(Sys.free_memory() / 2^20) MB -> $( Sys.free_memory() / Sys.total_memory() * 100) %")
+
 
     return map
 end

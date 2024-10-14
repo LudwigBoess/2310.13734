@@ -5,4 +5,5 @@ scripts/cic_maps/*.err
 scripts/cic_maps/log/*
 .DS_Store
 scripts/allsky/log/*
+scripts/allsky/*.out
 scripts/allsky/allsky.slurm

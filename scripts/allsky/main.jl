@@ -3,8 +3,10 @@ using Distributed, ClusterManagers
 
 # automatically decide if it needs to be run in slurm envirnoment
 try
-    println("allocating $(ENV["SLURM_NTASKS"]) slurm tasks")
-    addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))
+    println("allocating $(ENV["SLURM_NTASKS"]) slurm tasks, using $(2 * parse(Int64, ENV["SLURM_CPUS_PER_TASK"])) threads each")
+    withenv("JULIA_NUM_THREADS" => 2 * parse(Int64, ENV["SLURM_CPUS_PER_TASK"])) do
+        addprocs(addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))) # spawn 4 workers with 2 threads each
+    end
 catch err
     if isa(err, KeyError)
         println("allocating 2 normal tasks")
@@ -12,6 +14,11 @@ catch err
     end
 end
 
+println("pinning threads")
+@everywhere using ThreadPinning
+distributed_pinthreads(:compact)
+println(distributed_getcpuids())
+println(distributed_getispinned())
 println("done")
 flush(stdout);
 flush(stderr);
@@ -24,6 +31,7 @@ println("loading packages")
 @everywhere using Base.Threads
 @everywhere using Statistics
 @everywhere using Healpix
+
 println("done")
 flush(stdout);
 flush(stderr);
