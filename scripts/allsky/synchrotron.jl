@@ -5,6 +5,8 @@ Calculate synchrotron emissivity for a given data set at observational frequency
 """
 function get_synchrotron(data, nu, Bfield_function, show_progress=false)
 
+    calc_flux = false
+    
     Npart = length(data["CReC"])
     j_ν = Vector{Float64}(undef, Npart)
 
@@ -42,6 +44,12 @@ function get_synchrotron(data, nu, Bfield_function, show_progress=false)
             integrate_pitch_angle=true,
             convert_to_mJy=false)
 
+        if calc_flux
+            j_ν[i] *= (data["MASS"][i] * GU.m_cgs) / (data["RHO"][i] * GU.rho_cgs) * 1.e-7
+            j_ν[i] /= mJy_to_W(1.0, d * 1.e-3)
+        end
+
+
         if show_progress
             next!(P)
         end
@@ -75,6 +83,14 @@ function synch_maps_of_subfile(subfile, Bfield_function, Btype)
     j_nu = get_synchrotron(data, 144.e6, Bfield_function)
     j_nu = set_rest_to_zero(pos, j_nu)
     println("\tsynch done!\n\tmaximum = $(maximum(j_nu)) erg/s/Hz/cm^3\n\tsum = $(sum(j_nu)) erg/s/Hz/cm^3")
+    #println("\tsynch done!\n\tmaximum = $(maximum(j_nu)) mJy\n\tsum = $(sum(j_nu)) mJy")
+
+    # # take care of conversion
+    # for i = eachindex(j_nu)
+    #     j_nu[i] *= (data["RHO"][i] * GU.rho_cgs) / (data["MASS"][i] * GU.m_cgs)
+    #     j_nu[i] *= (data["HSML"][i] * GU.x_cgs)^2
+    # end
+    # #weights = ones(length(hsml)) .* GU.x_cgs
 
     map = healpix_map(pos, hsml, m, rho, j_nu, weights, show_progress=false;
         center, kernel, Nside)
@@ -111,18 +127,34 @@ function synch_maps_of_subfile(subfile)
     end
 end
 
+# function get_synch_filename()
+#     if Bfield_flag == 1
+#         return map_path * "allsky_synch_Pnu_144MHz_B_sim_$viewpoint.fits"
+#     elseif Bfield_flag == 2
+#         return map_path * "allsky_synch_Pnu_144MHz_B_beta50_$viewpoint.fits"
+#     elseif Bfield_flag == 3
+#         return map_path * "allsky_synch_Pnu_144MHz_B_01Pturb_$viewpoint.fits"
+#     elseif Bfield_flag == 4
+#         return map_path * "allsky_synch_Pnu_144MHz_B_FF_$viewpoint.fits"
+#     elseif Bfield_flag == 5
+#         return map_path * "allsky_synch_Pnu_144MHz_B_dyn_l_$viewpoint.fits"
+#     elseif Bfield_flag == 6
+#         return map_path * "allsky_synch_Pnu_144MHz_B_dyn_h_$viewpoint.fits"
+#     end
+# end
+
 function get_synch_filename()
     if Bfield_flag == 1
-        return map_path * "allsky_synch_Pnu_144MHz_B_sim_$viewpoint.fits"
+        return map_path * "allsky_synch_Snu_144MHz_B_sim_$viewpoint.fits"
     elseif Bfield_flag == 2
-        return map_path * "allsky_synch_Pnu_144MHz_B_beta50_$viewpoint.fits"
+        return map_path * "allsky_synch_Snu_144MHz_B_beta50_$viewpoint.fits"
     elseif Bfield_flag == 3
-        return map_path * "allsky_synch_Pnu_144MHz_B_01Pturb_$viewpoint.fits"
+        return map_path * "allsky_synch_Pnu_144MHz_B_Pturb_$viewpoint.fits"
     elseif Bfield_flag == 4
-        return map_path * "allsky_synch_Pnu_144MHz_B_FF_$viewpoint.fits"
+        return map_path * "allsky_synch_Snu_144MHz_B_FF_$viewpoint.fits"
     elseif Bfield_flag == 5
-        return map_path * "allsky_synch_Pnu_144MHz_B_dyn_l_$viewpoint.fits"
+        return map_path * "allsky_synch_Snu_144MHz_B_dyn_l_$viewpoint.fits"
     elseif Bfield_flag == 6
-        return map_path * "allsky_synch_Pnu_144MHz_B_dyn_h_$viewpoint.fits"
+        return map_path * "allsky_synch_Snu_144MHz_B_dyn_h_$viewpoint.fits"
     end
 end

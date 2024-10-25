@@ -1,16 +1,19 @@
 println("allocating cores")
 using Distributed, ClusterManagers
+
 # automatically decide if it needs to be run in slurm envirnoment
 try
-    println("allocating $(ENV["SLURM_NTASKS"]) slurm tasks")
-    addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))
+    println("allocating $(ENV["SLURM_NTASKS"]) slurm tasks, using $(2 * parse(Int64, ENV["SLURM_CPUS_PER_TASK"])) threads each")
+    withenv("JULIA_NUM_THREADS" => 2 * parse(Int64, ENV["SLURM_CPUS_PER_TASK"])) do
+        addprocs(addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))) # spawn 4 workers with 2 threads each
+    end
 catch err
     if isa(err, KeyError)
-        N_tasts_ = 2
-        println("allocating $N_tasts_ normal tasks")
-        addprocs(N_tasts_)
+        println("allocating 4 normal tasks")
+        addprocs(4)
     end
 end
+
 
 println("done")
 flush(stdout);
@@ -23,8 +26,8 @@ println("loading packages")
 @everywhere using Base.Threads
 @everywhere using Statistics
 @everywhere using ProgressMeter
-@everywhere using ThreadPinning
-pinthreads(:cores)
+# @everywhere using ThreadPinning
+# pinthreads(:cores)
 
 println("done")
 flush(stdout);
@@ -45,12 +48,14 @@ elseif ARGS[1] == "dyn_h"
 end
 
 
-@everywhere const snap = 74
-@everywhere const global sim_path = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/cr6p20eDpp/"
-@everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+#@everywhere const snap = 74
+#@everywhere const global sim_path = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/cr6p20eDpp/"
+#@everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+@everywhere const global snap_base = "/e/ocean3/Local/3072/nonrad_mhd_crs_new/snapdir_000_z=0/snap_000"
+#@everywhere const global snap_base = "/e/ocean2/users/lboess/LocalUniverseZooms/L5/cr6p20e/snapdir_074/snap_074"
 @everywhere const global GU = GadgetPhysical(GadgetIO.read_header(snap_base))
 
-@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "zoom_dpp")
+@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "box")
 
 @everywhere global const center_comov = zeros(3)
 @everywhere const global radius_limits = [0.0, Inf]
@@ -75,7 +80,7 @@ const results = RemoteChannel(() -> Channel{Tuple}(1600))
 
     data = Dict(block => read_block(snap_base * ".$subfile", block, parttype=0)
                 for block ∈ ["POS", "MASS", "RHO", "U", "BFLD", "VRMS",
-        "CReN", "CReS", "CReC"])
+                             "CReN", "CReS", "CReC"])
 
     println("\ttemperature and density")
     flush(stdout)
@@ -92,16 +97,21 @@ const results = RemoteChannel(() -> Channel{Tuple}(1600))
 
     # only bin the values within the phase range
     sel = findall(j_nu .> 1.e-52)
-    j_nu = j_nu[sel]
-    ne = ne[sel]
+    if length(sel) > 0
+        j_nu = j_nu[sel]
+        ne = ne[sel]
 
-    unit = "erg/cm^3/s/Hz"
+        unit = "erg/cm^3/s/Hz"
 
-    println("\tsynch done!\n\tminimum = $(minimum(j_nu[j_nu .> 0.0])) $unit\n\tmaximum = $(maximum(j_nu)) $unit\n\tsum = $(sum(j_nu)) $unit")
-    flush(stdout)
-    flush(stderr)
+        println("\tsynch done!\n\tminimum = $(minimum(j_nu[j_nu .> 0.0])) $unit\n\tmaximum = $(maximum(j_nu)) $unit\n\tsum = $(sum(j_nu)) $unit")
+        flush(stdout)
+        flush(stderr)
 
-    ne_count, jnu_sum = bin_1D_log(ne, x_lim, j_nu, show_progress=false, calc_sigma=false)
+        ne_count, jnu_sum = bin_1D_log(ne, x_lim, j_nu, show_progress=false, calc_sigma=false)
+    else
+        ne_count = zeros(Int64, Nbins)
+        jnu_sum = zeros(Float64, Nbins)
+    end
     j_nu = nothing
     data = nothing
     ne = nothing
@@ -148,7 +158,7 @@ end
     elseif Bfield_flag == 2
         return map_path * "/bin_1D_synch_emissivity_144MHz_B_beta50.dat"
     elseif Bfield_flag == 3
-        return map_path * "/bin_1D_synch_emissivity_144MHz_B_01Pturb.dat"
+        return map_path * "/bin_1D_synch_emissivity_144MHz_B_Pturb.dat"
     elseif Bfield_flag == 4
         return map_path * "/bin_1D_synch_emissivity_144MHz_B_FF.dat"
     elseif Bfield_flag == 5
@@ -182,8 +192,8 @@ function run_jnu_1D()
         remote_do(do_work, p, jobs, results)
     end
 
-    # n = 2048
-    n = 16
+    n = 2048
+    #n = 16
 
     sum_ne_count = zeros(Int64, Nbins)
     sum_jnu = zeros(Float64, Nbins)

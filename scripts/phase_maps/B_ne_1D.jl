@@ -6,7 +6,7 @@ try
     addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))
 catch err
     if isa(err, KeyError)
-        N_tasts_ = 8
+        N_tasts_ = 2
         println("allocating $N_tasts_ normal tasks")
         addprocs(N_tasts_)
     end
@@ -42,10 +42,10 @@ elseif ARGS[1] == "dyn_h"
 end
 
 
-@everywhere const snap = 36
-#@everywhere const global sim_path = "/e/ocean2/users/lboess/LocalUniverseZooms/L5/mhd_cr8p24e/"
-@everywhere const global sim_path = "/path/to/simulation/"
-@everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+# @everywhere const snap = 36
+# #@everywhere const global sim_path = "/e/ocean2/users/lboess/LocalUniverseZooms/L5/mhd_cr8p24e/"
+# @everywhere const global sim_path = "/path/to/simulation/"
+@everywhere const snap_base = "/e/ocean3/Local/3072/nonrad_mhd_crs_new/snapdir_000_z=0/snap_000"
 @everywhere const global GU = GadgetPhysical(GadgetIO.read_header(snap_base))
 
 @everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "box")
@@ -133,7 +133,7 @@ end
     elseif Bfield_flag == 2
         return map_path * "/bin_1D_B_beta50.dat"
     elseif Bfield_flag == 3
-        return map_path * "/bin_1D_B_01Pturb.dat"
+        return map_path * "/bin_1D_B_Pturb.dat"
     elseif Bfield_flag == 4
         return map_path * "/bin_1D_B_FF.dat"
     elseif Bfield_flag == 5
@@ -168,7 +168,7 @@ function run_B_1D()
     end
 
     # n = 2048
-    # n = 4
+    #n = 4
 
     n = GadgetIO.read_header(snap_base).num_files
 
