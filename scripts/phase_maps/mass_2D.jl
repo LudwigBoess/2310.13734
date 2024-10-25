@@ -22,17 +22,18 @@ println("loading packages")
 @everywhere using SpectralCRsUtility
 @everywhere using Base.Threads
 @everywhere using Statistics
-@everywhere using PyPlotUtility
+@everywhere include("bin_2D.jl")
 println("done")
 flush(stdout);
 flush(stderr);
 
 
 # mapping settings
-@everywhere const snap = 36
-@everywhere const global sim_path = "path/to/simulation/"
-@everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
-@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_data")
+# @everywhere const snap = 36
+# @everywhere const global sim_path = "path/to/simulation/"
+# @everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+@everywhere const snap_base = "/e/ocean3/Local/3072/nonrad_mhd_crs_new/snapdir_000_z=0/snap_000"
+@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "box")
 @everywhere const global GU = GadgetPhysical(GadgetIO.read_header(snap_base))
 
 
@@ -59,7 +60,7 @@ end
     data = Dict(block => read_block(snap_base * ".$subfile", block, parttype=0)
                 for block ∈ ["MASS", "RHO", "U"])
 
-    println("\ttemperature and density")
+    #println("\ttemperature and density")
     flush(stdout)
     flush(stderr)
     T = data["U"] .* GU.T_K
@@ -147,5 +148,5 @@ function run_phase_maps(filename)
     write_phase_map(filename, sum_phase_M)
 end
 
-filename = map_path * "phase_map_mass2.dat"
+filename = map_path * "/phase_map_mass2.dat"
 run_phase_maps(filename)

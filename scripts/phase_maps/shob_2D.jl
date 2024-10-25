@@ -6,7 +6,7 @@ try
     addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))
 catch err
     if isa(err, KeyError)
-        N_tasts_ = 4
+        N_tasts_ = 8
         println("allocating $N_tasts_ normal tasks")
         addprocs(N_tasts_)
     end
@@ -22,17 +22,18 @@ println("loading packages")
 @everywhere using SpectralCRsUtility
 @everywhere using Base.Threads
 @everywhere using Statistics
-@everywhere using PyPlotUtility
+@everywhere include(joinpath(@__DIR__, "bin_2D.jl"))
 println("done")
 flush(stdout);
 flush(stderr);
 
 
 # mapping settings
-@everywhere const snap = 74
-@everywhere const global sim_path = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/cr6p20e/"
-@everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
-@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "zoom_inj")
+#@everywhere const snap = 74
+#@everywhere const global sim_path = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/cr6p20e/"
+@everywhere const snap_base = "/e/ocean3/Local/3072/nonrad_mhd_crs_new/snapdir_000_z=0/snap_000"
+#@everywhere const global snap_base = "/e/ocean2/users/lboess/LocalUniverseZooms/L5/cr6p20eDpp/snapdir_074/snap_074"
+@everywhere const data_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "box")
 @everywhere const global GU = GadgetPhysical(GadgetIO.read_header(snap_base))
 
 
@@ -55,12 +56,18 @@ const results = RemoteChannel(() -> Channel{Matrix}(80000))
     println("\treading data")
     flush(stdout)
     flush(stderr)
-    ne = log10.(read_block(snap_base * ".$subfile", "RHO", parttype=0) .* GU.rho_ncm3)
+    # read Mach number
+    Mach = read_block(snap_base * ".$subfile", "MACH", parttype=0)
+    # select only shocked gas above the critical Mach number
+    #sel = findall(Mach .> 1.0)
+    sel = findall(Mach .> 2.3)
 
-    M = read_block(snap_base * ".$subfile", "MASS", parttype=0) .* GU.m_msun
+    ne = log10.(read_block(snap_base * ".$subfile", "RHO", parttype=0)[sel] .* GU.rho_ncm3)
+
+    M = read_block(snap_base * ".$subfile", "MASS", parttype=0)[sel] .* GU.m_msun
 
     # calculate synchrotron emissivity
-    θ_B = rad2deg.(read_block(snap_base * ".$subfile", "SHOB", parttype=0))
+    θ_B = rad2deg.(read_block(snap_base * ".$subfile", "SHOB", parttype=0)[sel])
 
     θ_B[isnan.(θ_B)] .= -1.0
     θ_B[isinf.(θ_B)] .= -1.0
@@ -110,8 +117,8 @@ function run_phase_maps(filename)
         remote_do(do_work, p, jobs, results)
     end
 
-    #n = 2048
-    n = 16
+    n = 2048
+    #n = 16
 
     sum_phase_M = zeros(Float64, Nbins, Nbins)
 
@@ -145,5 +152,5 @@ function run_phase_maps(filename)
     write_phase_map(filename, sum_phase_M)
 end
 
-filename = map_path * "/phase_map_shob.dat"
+filename = data_path * "phase_map_shob_crit.dat"
 run_phase_maps(filename)
