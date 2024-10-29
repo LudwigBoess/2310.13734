@@ -20,6 +20,7 @@ function plot_10Mpc_col(folders)
     Ncols = length(filenames)
     Nrows = 4
 
+
     files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_$filename.xz.fits"
              for i ∈ 1:Nrows, filename ∈ filenames]
 
@@ -77,7 +78,7 @@ end
 
 
 folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
-#plot_10Mpc_col(folders)
+plot_10Mpc_col(folders)
 
 
 function plot_10Mpc_slope(folders)
@@ -99,7 +100,6 @@ function plot_10Mpc_slope(folders)
     im_cmap = ["Spectral_r"]
 
     cb_labels = ["Synchrotron Spectral Slope  " * L"\alpha_\mathrm{144 MHz}^\mathrm{1.4 GHz}"]
-
 
     annotate_time = trues(Nrows * Ncols)
     time_labels = [txt for _ = 1:Nrows, txt ∈ [L"B_\mathrm{sim}", L"B_{\beta}",
@@ -301,7 +301,8 @@ function plot_slope_histograms(folders, plot_name)
     plot([0.0], [0.0], color="k", lw=lw, linestyle=":", label=L"\sum \: j_\nu")
 
     handles, labels = gca().get_legend_handles_labels()
-    order = 1:6#[1, 6, 2, 7, 3, 4, 5]
+    order = 1:6
+
     l = legend([handles[idx] for idx in order], [labels[idx] for idx in order],
         frameon=false, bbox_to_anchor=(-2.0, -0.5), ncol=6, loc="lower center")
 
@@ -313,5 +314,5 @@ end
 folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
 plot_name = plot_path * "Fig07b.pdf"
 
-plot_slope_histograms(folders, plot_name)
+#plot_slope_histograms(folders, plot_name)
 

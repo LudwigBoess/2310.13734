@@ -1,6 +1,8 @@
 using SPHtoGrid
 using Printf
 
+const global map_path = "/e/ocean2/users/lboess/PaperRepos/2310.13734/maps/"
+
 """
     get_slope_image(im_144, im_1440, vmin)
 
@@ -51,12 +53,17 @@ function write_slope_image(map_base, snap, Bname)
 
 end
 
-Bnames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
-folders = "coma/" * ["box", "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"]  .* "/"
-snaps = ["036", "012", "074", "012", "012"]
+Bnames = [#"Bsim", "beta50", 
+        "Pturb"#, "BFF", "dyn_l", "dyn_h"
+        ]
+folders = [#"box", "zoom_inj", "zoom_dpp"#, 
+            "zoom_HB"
+            ]  .* "/"
+snaps = [#"000", "074", "074", 
+        "074"]
 
 
-for i ∈ 5:length(folders), Bname ∈ Bnames 
+for i ∈ 1:length(folders), Bname ∈ Bnames 
     println(folders[i], " ", Bname)
     write_slope_image(map_path * folders[i], snaps[i], Bname)
 end

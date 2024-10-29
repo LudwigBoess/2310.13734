@@ -11,7 +11,7 @@ function get_CReE_seed(filename)
 
     # cr setup 
     Nbins = size(data["CReN"], 1)
-    par = CRMomentumDistributionConfig(0.1, 1.e5, Nbins)
+    par = CRMomentumDistributionConfig(1.0, 1.e5, Nbins)
     bounds = momentum_bin_boundaries(par)
 
     @threads for i = 1:Npart
@@ -45,7 +45,7 @@ function CReE_seed_maps_of_subfile(subfile)
     CReP = get_CReE_seed(snap_base * ".$subfile")
     CReP = set_rest_to_zero(pos, CReP)
 
-    map = healpix_map(pos, hsml, m, rho, CReP, rho, show_progress=true, calc_mean=false;
+    map = healpix_map(pos, hsml, m, rho, CReP, rho, show_progress=false, calc_mean=false;
         center, kernel, Nside)
 
     pos = hsml = rho = m = nothing
@@ -69,7 +69,7 @@ function get_CReE(filename)
 
     # cr setup 
     Nbins = size(data["CReN"], 1)
-    par = CRMomentumDistributionConfig(0.1, 1.e5, Nbins)
+    par = CRMomentumDistributionConfig(1.0, 1.e5, Nbins)
     bounds = momentum_bin_boundaries(par)
 
     @threads for i = 1:Npart

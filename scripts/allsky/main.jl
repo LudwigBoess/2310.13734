@@ -3,15 +3,22 @@ using Distributed, ClusterManagers
 
 # automatically decide if it needs to be run in slurm envirnoment
 try
-    println("allocating $(ENV["SLURM_NTASKS"]) slurm tasks")
-    addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))
+    println("allocating $(ENV["SLURM_NTASKS"]) slurm tasks, using $(2 * parse(Int64, ENV["SLURM_CPUS_PER_TASK"])) threads each")
+    withenv("JULIA_NUM_THREADS" => 2 * parse(Int64, ENV["SLURM_CPUS_PER_TASK"])) do
+        addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"])) # spawn 4 workers with 2 threads each
+    end
 catch err
     if isa(err, KeyError)
-        println("allocating 2 normal tasks")
-        addprocs(2)
+        println("allocating 20 normal tasks")
+        addprocs(20)
     end
 end
 
+println("pinning threads")
+@everywhere using ThreadPinning
+distributed_pinthreads(:cores)
+println(distributed_getcpuids())
+println(distributed_getispinned())
 println("done")
 flush(stdout);
 flush(stderr);
@@ -24,6 +31,7 @@ println("loading packages")
 @everywhere using Base.Threads
 @everywhere using Statistics
 @everywhere using Healpix
+
 println("done")
 flush(stdout);
 flush(stderr);
@@ -72,9 +80,8 @@ function run_it()
 
     elseif ARGS[1] == "CReE"
 
-        filename = map_path * "allsky_CReE_40Mpc_$viewpoint.fits"
+        filename = map_path * "allsky_CReE_5Mpc_$viewpoint.fits"
         distributed_allsky_map(filename, Nside, Nfiles, CReE_maps_of_subfile, reduce_image=false)
-
 
     elseif ARGS[1] == "B"
 

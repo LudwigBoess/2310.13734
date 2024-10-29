@@ -23,6 +23,7 @@ end
 function read_spectra()
 
     filename = data_path * "spectra_relic_072.dat"
+
     f = open(filename, "r")
     Nids = read(f, Int64)
     ids = read!(f, Vector{UInt64}(undef, Nids))
@@ -78,7 +79,7 @@ function plot_spectra_2x1(spectra, ids, t)
             axvline(bound, color="k", linestyle="--", linewidth=1, alpha=0.2)
         end
 
-        @showprogress for i ∈ 2:2:length(t)-2
+        @showprogress for i ∈ 1:length(t) #2:2:length(t)-2
             ax.plot(spectra[Nid, i].spec.bound[1:end-1], spectra[Nid, i].spec.norm, 
                     c=sm.to_rgba(t[i]))
         end
@@ -87,12 +88,14 @@ function plot_spectra_2x1(spectra, ids, t)
         plot([1.e3, 1.e4], P0 .* [1.0, 1.0 * 10.0^(-4)], color="k", linestyle="--", linewidth=2)
         text(3.e3, 1.e-32, L"q_0 \: = " * "$(-4)", rotation=-45)
 
+        get_cr_energy_axis!(ax, "e")
 
         subplot(get_gs(gs, 0, 1))
         ax = gca()
         ax.set_xlim([1.e7, 1.e10])
         #ax.set_ylim([1.e-41, 1.e-37])
         ax.set_ylim([1.e-51, 1.e-43])
+
 
         ax.set_xscale("log")
         ax.set_yscale("log")
@@ -105,9 +108,11 @@ function plot_spectra_2x1(spectra, ids, t)
         @showprogress for i ∈ 2:2:length(t)-2
             ax.plot(ν_arr, spectra[Nid, i].j_nu, c=sm.to_rgba(t[i]))
         end
+
         P0 = 1.0e-44
         plot([1.e8, 1.e9], P0 .* [1.0, 1.0 * 10.0^(-0.5)], color="k", linestyle="--", linewidth=2)
         text(2.e8, 1.e-44, L"\alpha_0 \: = " * "$(-0.5)", rotation=-10)
+
 
 
         subplot(get_gs(gs, 0, 2))
@@ -122,6 +127,7 @@ function plot_spectra_2x1(spectra, ids, t)
 
         plot_name = plot_path * "Fig09_549835254511.pdf"
         #plot_name = plot_path * "cr_spectra/$(ids[Nid]).png"
+
         savefig(plot_name, bbox_inches="tight")
         close(fig)
     end

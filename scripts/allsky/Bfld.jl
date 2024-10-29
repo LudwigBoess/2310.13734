@@ -17,7 +17,7 @@ end
 
 
 function Bfield_vturb(data, i)
-    √(4π * data["RHO"][i] * GU.rho_cgs) * data["VRMS"][i] * GU.v_cgs * 0.4
+    √(4π * data["RHO"][i] * GU.rho_cgs) * data["VRMS"][i] * GU.v_cgs #* 0.4
 end
 
 function B_fit(x)
@@ -57,15 +57,24 @@ function run_Bfld_map_of_subfile(subfile, blocks, Bfld_function, Btype)
         B[i] = Bfld_function(data, i)
     end
     B = set_rest_to_zero(pos, B)
+    println("\tB done!\tmaximum = $(maximum(B)) muG")
 
-    map = healpix_map(pos, hsml, m, rho, B, rho, show_progress=false,
-        calc_mean=false;
+    # map = healpix_map(pos, hsml, m, rho, B, rho, show_progress=false;
+    #     center, kernel, Nside)
+    
+    map = healpix_map(pos, hsml, m, rho, B, rho, show_progress=false;
         center, kernel, Nside)
+
+    sel = findall(map[2] .> 0.0)
+    println("\tmap done!\tmaximum = $(maximum(map[1][sel]./map[2][sel])) G")
+    println("\tBefore GC: Available Memory: $(Sys.free_memory() / 2^20) MB -> $( Sys.free_memory() / Sys.total_memory() * 100) %")
 
     pos = hsml = rho = m = nothing
     B = nothing
     data = nothing
     GC.gc()
+    println("\tAfter GC: Available Memory: $(Sys.free_memory() / 2^20) MB -> $( Sys.free_memory() / Sys.total_memory() * 100) %")
+
 
     return map
 end
@@ -88,13 +97,14 @@ function Bfld_map_of_subfile(subfile)
     end
 end
 
+
 function get_B_filename()
     if Bfield_flag == 1
         return map_path * "allsky_B_sim_$viewpoint.fits"
     elseif Bfield_flag == 2
         return map_path * "allsky_B_beta50_$viewpoint.fits"
     elseif Bfield_flag == 3
-        return map_path * "allsky_B_01Pturb_$viewpoint.fits"
+        return map_path * "allsky_B_Pturb_$viewpoint.fits"
     elseif Bfield_flag == 4
         return map_path * "allsky_B_FF_$viewpoint.fits"
     elseif Bfield_flag == 5

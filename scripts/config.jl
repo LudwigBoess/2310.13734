@@ -5,6 +5,7 @@ const global dir_path = joinpath(@__DIR__, "..")
 # using Pkg;
 # Pkg.activate(dir_path);
 
+
 # paths to data, plots and maps
 const global data_path = dir_path * "/data/"
 const global plot_path = dir_path * "/Plots/"
