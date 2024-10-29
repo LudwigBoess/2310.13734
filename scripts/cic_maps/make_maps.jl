@@ -135,91 +135,91 @@ function make_synch_maps(snap, cluster, gpos, side_length, scale, map_type, nu, 
     flux = false
     reduce_image = false
 
-    # # Synch
-    # println("B sim")
-    # flush(stdout)
-    # flush(stderr)
+    # Synch
+    println("B sim")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_Bsim"
-    # j_ν = get_synchrotron(data, nu, Bfield_sim, true)
+    image_prefix = image_path * "$(synch)_Bsim"
+    j_ν = get_synchrotron(data, nu, Bfield_sim, true)
 
-    # j_ν = @. j_ν * factor
+    j_ν = @. j_ν * factor
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # j_ν = nothing
-    # GC.gc()
+    j_ν = nothing
+    GC.gc()
 
-    # println("B from FF")
-    # flush(stdout)
-    # flush(stderr)
+    println("B from FF")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_BFF"
-    # j_ν = get_synchrotron(data, nu, Bfield_FF, true)
-    # j_ν = @. j_ν * factor
+    image_prefix = image_path * "$(synch)_BFF"
+    j_ν = get_synchrotron(data, nu, Bfield_FF, true)
+    j_ν = @. j_ν * factor
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # j_ν = nothing
-    # GC.gc()
+    j_ν = nothing
+    GC.gc()
 
-    # println("B from beta = 50")
-    # flush(stdout)
-    # flush(stderr)
+    println("B from beta = 50")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_beta50"
-    # j_ν = get_synchrotron(data, nu, Bfield_Beta, true)
-    # j_ν = @. j_ν * factor
+    image_prefix = image_path * "$(synch)_beta50"
+    j_ν = get_synchrotron(data, nu, Bfield_Beta, true)
+    j_ν = @. j_ν * factor
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
-    # j_ν = nothing
-    # GC.gc()
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
+    j_ν = nothing
+    GC.gc()
 
-    # println("B dynamo h")
-    # flush(stdout)
-    # flush(stderr)
+    println("B dynamo h")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_dyn_h"
-    # j_ν = get_synchrotron(data, nu, Bfield_dyn_h, true)
-    # j_ν = @. j_ν * factor
+    image_prefix = image_path * "$(synch)_dyn_h"
+    j_ν = get_synchrotron(data, nu, Bfield_dyn_h, true)
+    j_ν = @. j_ν * factor
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # j_ν = nothing
-    # GC.gc()
+    j_ν = nothing
+    GC.gc()
 
-    # println("B dynamo l")
-    # flush(stdout)
-    # flush(stderr)
+    println("B dynamo l")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_dyn_l"
-    # j_ν = get_synchrotron(data, nu, Bfield_dyn_l, true)
-    # j_ν = @. j_ν * factor
+    image_prefix = image_path * "$(synch)_dyn_l"
+    j_ν = get_synchrotron(data, nu, Bfield_dyn_l, true)
+    j_ν = @. j_ν * factor
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # j_ν = nothing
-    # GC.gc()
+    j_ν = nothing
+    GC.gc()
 
     println("B vturb")
     flush(stdout)
@@ -297,132 +297,132 @@ function make_HB_synch_maps(snap, cluster, gpos, side_length, scale, map_type, n
 
     B = Vector{Float64}(undef, Npart)
 
-    # # Synch
-    # println("B sim")
-    # flush(stdout)
-    # flush(stderr)
+    # Synch
+    println("B sim")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_Bsim"
+    image_prefix = image_path * "$(synch)_Bsim"
 
-    # @threads for i = 1:Npart
-    #     B[i] = Bfield_sim(data, i)
-    # end
+    @threads for i = 1:Npart
+        B[i] = Bfield_sim(data, i)
+    end
 
-    # println("Bmax = ", maximum(B) * 1.e6, " muG")
-    # flush(stdout)
-    # flush(stderr)
+    println("Bmax = ", maximum(B) * 1.e6, " muG")
+    flush(stdout)
+    flush(stderr)
 
-    # j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
+    j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
 
     
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # j_ν = nothing
-    # GC.gc()
+    j_ν = nothing
+    GC.gc()
 
-    # println("B from FF")
-    # flush(stdout)
-    # flush(stderr)
+    println("B from FF")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_BFF"
-    # @threads for i = 1:Npart
-    #     B[i] = Bfield_FF(data, i)
-    # end
+    image_prefix = image_path * "$(synch)_BFF"
+    @threads for i = 1:Npart
+        B[i] = Bfield_FF(data, i)
+    end
 
-    # println("Bmax = ", maximum(B) * 1.e6, " muG")
-    # flush(stdout)
-    # flush(stderr)
+    println("Bmax = ", maximum(B) * 1.e6, " muG")
+    flush(stdout)
+    flush(stderr)
 
-    # j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
+    j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
     
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # j_ν = nothing
-    # GC.gc()
+    j_ν = nothing
+    GC.gc()
 
-    # println("B from beta = 50")
-    # flush(stdout)
-    # flush(stderr)
+    println("B from beta = 50")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_beta50"
-    # @threads for i = 1:Npart
-    #     B[i] = Bfield_Beta(data, i)
-    # end
+    image_prefix = image_path * "$(synch)_beta50"
+    @threads for i = 1:Npart
+        B[i] = Bfield_Beta(data, i)
+    end
 
-    # println("Bmax = ", maximum(B) * 1.e6, " muG")
-    # flush(stdout)
-    # flush(stderr)
+    println("Bmax = ", maximum(B) * 1.e6, " muG")
+    flush(stdout)
+    flush(stderr)
 
-    # j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
+    j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
     
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
-    # j_ν = nothing
-    # GC.gc()
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
+    j_ν = nothing
+    GC.gc()
 
-    # println("B dynamo h")
-    # flush(stdout)
-    # flush(stderr)
+    println("B dynamo h")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_dyn_h"
-    # @threads for i = 1:Npart
-    #     B[i] = Bfield_dyn_h(data, i)
-    # end
+    image_prefix = image_path * "$(synch)_dyn_h"
+    @threads for i = 1:Npart
+        B[i] = Bfield_dyn_h(data, i)
+    end
 
-    # println("Bmax = ", maximum(B) * 1.e6, " muG")
-    # flush(stdout)
-    # flush(stderr)
+    println("Bmax = ", maximum(B) * 1.e6, " muG")
+    flush(stdout)
+    flush(stderr)
 
-    # j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
+    j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
     
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # j_ν = nothing
-    # GC.gc()
+    j_ν = nothing
+    GC.gc()
 
-    # println("B dynamo l")
-    # flush(stdout)
-    # flush(stderr)
+    println("B dynamo l")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_dyn_l"
-    # @threads for i = 1:Npart
-    #     B[i] = Bfield_dyn_l(data, i)
-    # end
+    image_prefix = image_path * "$(synch)_dyn_l"
+    @threads for i = 1:Npart
+        B[i] = Bfield_dyn_l(data, i)
+    end
 
-    # println("Bmax = ", maximum(B) * 1.e6, " muG")
-    # flush(stdout)
-    # flush(stderr)
+    println("Bmax = ", maximum(B) * 1.e6, " muG")
+    flush(stdout)
+    flush(stderr)
 
-    # j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
+    j_ν = analytic_synchrotron_HB07(rho_cgs, m_cgs, hsml_cgs, B, T_keV, mach, ν0=nu)
     
 
-    # map_it(pos, hsml, mass, rho, j_ν, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, j_ν, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # j_ν = nothing
-    # GC.gc()
+    j_ν = nothing
+    GC.gc()
 
     println("B vturb")
     flush(stdout)
@@ -614,13 +614,13 @@ synch = "synch_Inu_1.4GHz"
 nu = 1.4e9 * ( 1 + z_coma )
 make_synch_maps(snap, cluster, gpos, side_length, "20Mpc", "SB", nu, synch)
 
-#make_quantity_maps(snap, cluster, gpos, side_length, "20Mpc")
+make_quantity_maps(snap, cluster, gpos, side_length, "20Mpc")
 
-# z_coma = 0.0231
-# nu = 144.0e6 * (1 + z_coma)
-# synch = "synch_Inu_144MHz"
-# make_HB_synch_maps(snap, cluster, gpos, side_length, "20Mpc", "SB", nu, synch)
+z_coma = 0.0231
+nu = 144.0e6 * (1 + z_coma)
+synch = "synch_Inu_144MHz"
+make_HB_synch_maps(snap, cluster, gpos, side_length, "20Mpc", "SB", nu, synch)
 
-# synch = "synch_Inu_1.4GHz"
-# nu = 1.4e9 * ( 1 + z_coma )
-# make_HB_synch_maps(snap, cluster, gpos, side_length, "20Mpc", "SB", nu, synch)
+synch = "synch_Inu_1.4GHz"
+nu = 1.4e9 * ( 1 + z_coma )
+make_HB_synch_maps(snap, cluster, gpos, side_length, "20Mpc", "SB", nu, synch)

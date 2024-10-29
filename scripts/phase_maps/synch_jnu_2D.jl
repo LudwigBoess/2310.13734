@@ -6,7 +6,7 @@ try
     addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))
 catch err
     if isa(err, KeyError)
-        N_tasts_ = 4
+        N_tasts_ = 10
         println("allocating $N_tasts_ normal tasks")
         addprocs(N_tasts_)
     end
@@ -62,9 +62,11 @@ end
 
 @everywhere const global GU = GadgetPhysical(GadgetIO.read_header(snap_base))
 
-@everywhere const global center_comov = [247.980, 245.480, 255.290] .* 1.e3
-@everywhere const global center = center_comov .* GU.x_physical
-@everywhere const global radius_limits = [10_000.0, 240_000.0 * GU.x_physical] # for flux
+#@everywhere const global center_comov = [247.980, 245.480, 255.290] .* 1.e3
+#@everywhere const global center = center_comov .* GU.x_physical
+#@everywhere const global radius_limits = [10_000.0, 240_000.0 * GU.x_physical] # for flux
+@everywhere global const center_comov = zeros(3)
+@everywhere const global radius_limits = [0.0, Inf]
 
 @everywhere include(joinpath(@__DIR__, "bin_2D.jl"))
 @everywhere include(joinpath(@__DIR__, "..", "allsky", "Bfld.jl"))

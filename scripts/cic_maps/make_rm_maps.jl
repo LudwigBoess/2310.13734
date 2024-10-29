@@ -32,7 +32,7 @@ const global radius_limits = [0.0, Inf]
 
 # const global data_path = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/cr6p20e/maps/"
 # const global sim_path = "/gpfs/work/pn36ze/di93son/LocalUniverse/Coma/L5/cr6p20e/"
-const global data_path = "/e/ocean2/users/lboess/LocalUniverseZooms/L5/cr6p20e/maps/"
+const global data_path = "/e/ocean2/users/lboess/PaperRepos/2310.13734/maps/zoom_inj/"
 const global sim_path =  "/e/ocean2/users/lboess/LocalUniverseZooms/L5/cr6p20e/"
 
 const global snap = 74
@@ -111,90 +111,90 @@ function make_RM_maps(snap, cluster, gpos, side_length, scale)
     reduce_image = false
 
 
-    # # Synch
-    # println("B sim")
-    # flush(stdout)
-    # flush(stderr)
+    # Synch
+    println("B sim")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_Bsim"
-    # B = rescale_bfield(data, Bfield_sim)
-    # RM = @. rotation_measure(ncm3, B[2,:])
+    image_prefix = image_path * "$(synch)_Bsim"
+    B = rescale_bfield(data, Bfield_sim)
+    RM = @. rotation_measure(ncm3, B[2,:])
     
-    # map_it(pos, hsml, mass, rho, RM, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, RM, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # B = RM = nothing
-    # GC.gc()
+    B = RM = nothing
+    GC.gc()
 
-    # println("B from FF")
-    # flush(stdout)
-    # flush(stderr)
+    println("B from FF")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_BFF"
-    # B = rescale_bfield(data, Bfield_FF)
-    # RM = @. rotation_measure(ncm3, B[2,:])
+    image_prefix = image_path * "$(synch)_BFF"
+    B = rescale_bfield(data, Bfield_FF)
+    RM = @. rotation_measure(ncm3, B[2,:])
     
-    # map_it(pos, hsml, mass, rho, RM, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, RM, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # B = RM = nothing
-    # GC.gc()
+    B = RM = nothing
+    GC.gc()
 
-    # println("B from beta = 50")
-    # flush(stdout)
-    # flush(stderr)
+    println("B from beta = 50")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_beta50"
-    # B = rescale_bfield(data, Bfield_Beta)
-    # RM = @. rotation_measure(ncm3, B[2,:])
+    image_prefix = image_path * "$(synch)_beta50"
+    B = rescale_bfield(data, Bfield_Beta)
+    RM = @. rotation_measure(ncm3, B[2,:])
     
-    # map_it(pos, hsml, mass, rho, RM, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
-    # B = RM = nothing
-    # GC.gc()
+    map_it(pos, hsml, mass, rho, RM, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
+    B = RM = nothing
+    GC.gc()
 
-    # println("B dynamo h")
-    # flush(stdout)
-    # flush(stderr)
+    println("B dynamo h")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_dyn_h"
-    # B = rescale_bfield(data, Bfield_dyn_h)
-    # RM = @. rotation_measure(ncm3, B[2,:])
+    image_prefix = image_path * "$(synch)_dyn_h"
+    B = rescale_bfield(data, Bfield_dyn_h)
+    RM = @. rotation_measure(ncm3, B[2,:])
     
-    # map_it(pos, hsml, mass, rho, RM, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, RM, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # B = RM = nothing
-    # GC.gc()
+    B = RM = nothing
+    GC.gc()
 
-    # println("B dynamo l")
-    # flush(stdout)
-    # flush(stderr)
+    println("B dynamo l")
+    flush(stdout)
+    flush(stderr)
 
-    # image_prefix = image_path * "$(synch)_dyn_l"
-    # B = rescale_bfield(data, Bfield_dyn_l)
-    # RM = @. rotation_measure(ncm3, B[2,:])
+    image_prefix = image_path * "$(synch)_dyn_l"
+    B = rescale_bfield(data, Bfield_dyn_l)
+    RM = @. rotation_measure(ncm3, B[2,:])
     
-    # map_it(pos, hsml, mass, rho, RM, weights,
-    #     parallel=true,
-    #     projection="xz";
-    #     reduce_image, units,
-    #     kernel, snap, param, image_prefix)
+    map_it(pos, hsml, mass, rho, RM, weights,
+        parallel=true,
+        projection="xz";
+        reduce_image, units,
+        kernel, snap, param, image_prefix)
 
-    # B = RM = nothing
-    # GC.gc()
+    B = RM = nothing
+    GC.gc()
 
     println("B vturb")
     flush(stdout)

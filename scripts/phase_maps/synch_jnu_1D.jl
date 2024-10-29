@@ -193,7 +193,7 @@ function run_jnu_1D()
     end
 
     n = 2048
-    #n = 16
+    #n = 4
 
     sum_ne_count = zeros(Int64, Nbins)
     sum_jnu = zeros(Float64, Nbins)
@@ -218,7 +218,6 @@ function run_jnu_1D()
     flush(stderr)
 
     jnu_sigma = σ_1D_quantity(sum_jnu, sum_ne_count)
-
 
     for i = 1:length(sum_ne_count)
         if !iszero(sum_ne_count[i])

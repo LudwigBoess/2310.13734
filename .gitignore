@@ -7,3 +7,8 @@ scripts/cic_maps/log/*
 scripts/allsky/log/*
 scripts/allsky/*.out
 scripts/allsky/allsky.slurm
+scripts/phase_maps/log/*
+scripts/allsky/mhd.slurm
+scripts/allsky/run_B.sh
+scripts/phase_maps/job.slurm
+scripts/phase_maps/job.slurm
