@@ -40,7 +40,7 @@ function write_slope_image(map_base, snap, Bname)
     im_1440, par, snap_num, units = read_fits_image(files[2])
 
     println("constructing slope image")
-    im_slope = get_slope_image(im_144, im_1440, 1.e-28)
+    im_slope = get_slope_image(im_144, im_1440, 1.e-26)
 
     filename = map_base * "coma_20Mpc_$snap.synch_slope_$Bname.xz.fits"
     println("saving slope image")
@@ -53,11 +53,14 @@ function write_slope_image(map_base, snap, Bname)
 
 end
 
-Bnames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
-folders = ["box"#, 
-            #"zoom_inj", "zoom_dpp", "zoom_HB07"
+Bnames = [#"Bsim", "beta50", 
+        "Pturb"#, "BFF", "dyn_l", "dyn_h"
+        ]
+folders = [#"box", "zoom_inj", "zoom_dpp"#, 
+            "zoom_HB"
             ]  .* "/"
-snaps = ["000", "074", "074", "074"]
+snaps = [#"000", "074", "074", 
+        "074"]
 
 
 for i ∈ 1:length(folders), Bname ∈ Bnames 
