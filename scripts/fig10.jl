@@ -69,6 +69,9 @@ function plot_phase_map(mass_map, x_lim, y_lim, c_lim, cmap,
     cmap = plt.get_cmap(cmap)
     cmap.set_bad("white")
 
+    println("maximum(mass_map) = ", maximum(mass_map))
+    println("maximum(contour_map) = ", maximum(contour_map))
+
     # mass
     im1 = pcolormesh(X, Y, mass_map,
         cmap=mass_cmap,
@@ -81,22 +84,22 @@ function plot_phase_map(mass_map, x_lim, y_lim, c_lim, cmap,
         norm=matplotlib.colors.LogNorm(vmin=contour_limits[1], vmax=contour_limits[2]),
         alpha=0.5)
 
-    # define inset axis with zoomed window
-    axins = inset_locator.inset_axes(ax,
-        width="100%", height="100%",
-        bbox_to_anchor=(0.62, 0.035, 0.4, 0.4),
-        bbox_transform=ax.transAxes)
+    # # define inset axis with zoomed window
+    # axins = inset_locator.inset_axes(ax,
+    #     width="100%", height="100%",
+    #     bbox_to_anchor=(0.62, 0.035, 0.4, 0.4),
+    #     bbox_transform=ax.transAxes)
 
 
-    axins.set_xticklabels([])
-    axins.set_yticklabels([])
-    axins.set_xticks([])
-    axins.set_yticks([])
-    axins.imshow(mass_map,
-        norm=matplotlib.colors.LogNorm(vmin=c_lim[1], vmax=c_lim[2]),
-        cmap=mass_cmap,
-        origin="lower"
-    )
+    # axins.set_xticklabels([])
+    # axins.set_yticklabels([])
+    # axins.set_xticks([])
+    # axins.set_yticks([])
+    # axins.imshow(mass_map,
+    #     norm=matplotlib.colors.LogNorm(vmin=c_lim[1], vmax=c_lim[2]),
+    #     cmap=mass_cmap,
+    #     origin="lower"
+    # )
 
 
     subplot(get_gs(gs, 1, 1))
@@ -121,15 +124,14 @@ end
 
 
 
-output_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/phase_maps/"
-filename = output_path * "phase_map_mass.dat"
+filename = data_path * "phase_maps/box/phase_map_mass2.dat"
 x_lim, y_lim, phase_map = read_phase_map(filename)
 
-filename = output_path * "phase_map_CReE_high.dat"
+filename = data_path * "phase_maps/box/phase_map_CReE_high.dat"
 x_lim, y_lim, contour_map = read_phase_map(filename)
 
-c_lim = [1.e11, 1.e16]
-contour_limits = [1.e53, 1.e59]
+c_lim = [1.e10, 1.e16]
+contour_limits = [1.e52, 1.e58]
 contour_label = L"E_\mathrm{CR,e > 1 GeV}" * " [erg]"
 
 plot_name = plot_path * "Fig10.pdf"

@@ -48,7 +48,7 @@ function plot_models(phase_map_path, plot_name)
     Bfield_functions = [Bfield_FF, Bfield_dyn_l, Bfield_dyn_h]
 
     filename = phase_map_path .* ["box/bin_1D_$B.dat"
-                             for B ∈ ["B_sim", "B_beta50", "B_01Pturb"] ]
+                             for B ∈ ["B_sim", "B_beta50", "B_Pturb"] ]
 
     sm2 = plt.cm.ScalarMappable(cmap=PyPlot.cm.magma,
         norm=plt.Normalize(vmin=0, vmax=6.5))

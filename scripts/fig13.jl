@@ -1,4 +1,5 @@
 include(joinpath(@__DIR__, "config.jl"))
+include(joinpath(@__DIR__, "shared.jl"))
 
 @info "loading packages"
 using GadgetIO, GadgetUnits
@@ -26,8 +27,8 @@ function plot_shob_phase_map_compare(fi1, fi2, c_lim,
         norm=plt.Normalize(vmin=0, vmax=4.5))
     sm2.set_array([])
 
-    x_lim, y_lim, phase_map = read_phase_map(fi1)
-    mass_map = phase_map .* 8.479961392950551e7
+    x_lim, y_lim, mass_map = read_phase_map(fi1)
+    #mass_map = phase_map .* 8.479961392950551e7
 
     xlabel_text = "Electron Density  " * L"n_e" * "  [cm" * L"^{-3}]"
     ylabel_text = "Shock Obliquity  " * L"\theta_B" * "  [" * L"^\circ" * "]"
@@ -108,16 +109,16 @@ function plot_shob_phase_map_compare(fi1, fi2, c_lim,
     close(fig)
 end
 
-data_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/"
+data_path = "/Users/ludwigboess/Documents/Code/PaperRepos/2310.13734/data/"
 c_lim = [1.e9, 3.e12]
-fi1 = data_path * "phase_maps/box/phase_2D_SHOB.dat"
-fi2 = data_path * "phase_maps/zoom_inj/phase_2D_SHOB.dat"
-x_lim, y_lim, phase_map = read_phase_map(fi1)
-mass_map = phase_map .* 8.479961392950551e7
+fi1 = data_path * "phase_maps/box/phase_map_shob.dat"
+fi2 = data_path * "phase_maps/zoom_inj/phase_map_shob.dat"
+x_lim, y_lim, mass_map = read_phase_map(fi1)
+#mass_map = phase_map .* 8.479961392950551e7
 
 maximum(mass_map)
 
-plot_name = plot_path * "Fig10.pdf"
+plot_name = plot_path * "Fig13.pdf"
 
 plot_shob_phase_map_compare(fi1, fi2, c_lim,
     plot_name, transparent=false)

@@ -23,28 +23,22 @@ function plot_phase_maps(phase_map_path, plot_name)
         L"B_\mathrm{dyn ↑}"]
 
     filename = phase_map_path .* ["box/phase_map_synch_emissivity_144MHz_$B.dat"
-                             for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
+                             for B ∈ ["B_sim", "B_beta50", "B_Pturb",
         "B_FF", "B_dyn_l", "B_dyn_h"]
     ]
 
     filename_1D = phase_map_path .* ["box/bin_1D_synch_emissivity_144MHz_$B.dat"
-                                for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
+                                for B ∈ ["B_sim", "B_beta50", "B_Pturb",
         "B_FF", "B_dyn_l", "B_dyn_h"]
     ]
 
     filename_1D_zoom = phase_map_path .* ["zoom_inj/bin_1D_synch_emissivity_144MHz_$B.dat"
-                                     for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
+                                     for B ∈ ["B_sim", "B_beta50", "B_Pturb",
         "B_FF", "B_dyn_l", "B_dyn_h"]
     ]
 
-    filename_1D_zoom_Dpp_low = phase_map_path .* ["zoom_dpp_low/bin_1D_synch_emissivity_144MHz_$B.dat"
-                                             for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
-        "B_FF", "B_dyn_l", "B_dyn_h"]
-    ]
-
-
-    filename_1D_zoom_Dpp_high = phase_map_path .* ["zoom_dpp_high/bin_1D_synch_emissivity_144MHz_$B.dat"
-                                              for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
+    filename_1D_zoom_Dpp = phase_map_path .* ["zoom_dpp/bin_1D_synch_emissivity_144MHz_$B.dat"
+                                             for B ∈ ["B_sim", "B_beta50", "B_Pturb",
         "B_FF", "B_dyn_l", "B_dyn_h"]
     ]
 
@@ -60,7 +54,7 @@ function plot_phase_maps(phase_map_path, plot_name)
 
     mass_cmap = "bone_r"
     mass_label = "Mass " * L"M \:\: [M_\odot]"
-    c_lim = [1.e7, 1.e14]
+    c_lim = [1.e8, 1.e13]
 
     color = "k"
     alpha_ref = 1.0
@@ -80,7 +74,7 @@ function plot_phase_maps(phase_map_path, plot_name)
     sm.set_array([])
 
     sm2 = plt.cm.ScalarMappable(cmap=PyPlot.cm.magma,
-        norm=plt.Normalize(vmin=0, vmax=4.5))
+        norm=plt.Normalize(vmin=0, vmax=3.5))
     sm2.set_array([])
 
     subplot(get_gs(gs, 0, 0:3))
@@ -151,23 +145,14 @@ function plot_phase_maps(phase_map_path, plot_name)
             plot(ne_bins, jnu_mean, alpha=alpha_ref,
                 color=sm2.to_rgba(2), lw=lw, label="Coma")#L"\textsc{Coma}")
 
-            ne_bins, jnu_mean = read_1D_data(filename_1D_zoom_Dpp_low[Nfile])
+            ne_bins, jnu_mean = read_1D_data(filename_1D_zoom_Dpp[Nfile])
             sel = findall(ne_bins .< 5.e-9)
             jnu_mean[sel] .= NaN
             sel = findall(ne_bins .> 3.e-1)
             jnu_mean[sel] .= NaN
             plot(ne_bins, jnu_mean, alpha=alpha_ref,
                 color=sm2.to_rgba(3), lw=lw,
-                label="Coma-" * L"D_\mathrm{pp}" * "-Low")
-
-            ne_bins, jnu_mean = read_1D_data(filename_1D_zoom_Dpp_high[Nfile])
-            sel = findall(ne_bins .< 5.e-9)
-            jnu_mean[sel] .= NaN
-            sel = findall(ne_bins .> 3.e-1)
-            jnu_mean[sel] .= NaN
-            plot(ne_bins, jnu_mean, alpha=alpha_ref,
-                color=sm2.to_rgba(4), lw=lw,
-                label="Coma-" * L"D_\mathrm{pp}" * "-High")
+                label="Coma-" * L"D_\mathrm{pp}")
         end
 
 
@@ -187,7 +172,7 @@ function plot_phase_maps(phase_map_path, plot_name)
     close(fig)
 end
 
-phase_map_path = data_path * "phase_maps_new/"
+phase_map_path = data_path * "phase_maps/"
 plot_name = plot_path * "Fig11.pdf"
 
 plot_phase_maps(phase_map_path, plot_name)

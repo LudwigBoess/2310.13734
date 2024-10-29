@@ -3,19 +3,19 @@ using PyPlot, PyPlotUtility
 using Printf
 using ColorSchemes
 
-
+include(joinpath(@__DIR__, "config.jl"))
 
 function plot_it()
 
 # found by selecting particles by hand
-    coma_center = [244977.58, 327853.62, 245989.75] .* 1.e-3
-    cylinder = GadgetCylinder([247.75, 332.0, 248.5] - coma_center, 
-                              [248.5, 332.75, 249.25] - coma_center, 
-                              2.5e3)
+    # coma_center = [244977.58, 327853.62, 245989.75] .* 1.e-3
+    # cylinder = GadgetCylinder([247.75, 332.0, 248.5] - coma_center, 
+    #                           [248.5, 332.75, 249.25] - coma_center, 
+    #                           2.5e3)
 
-    files = [map_path * "coma/zoom_dpp_5e-17/coma_20Mpc_012.synch_F_beam_1'_144MHz_dyn_h.xz.fits"]
+    files = [map_path * "zoom_inj/coma_20Mpc_074.synch_F_beam_1'_144MHz_dyn_h.xz.fits"]
 
-    x_pixels = 800
+    x_pixels = 900
     fig = get_figure(1.0; x_pixels)
     plot_styling!(x_pixels)
 
@@ -33,11 +33,16 @@ function plot_it()
             cnorm=norm, cmap=ColorMap("bukavo", ColorSchemes.bukavu[1:end]))
 
         cb = get_colorbar_top(ax, im, "Synchrotron Flux  " * L"F_{ν,144 \mathrm{ MHz}}" * " [mJy arcmin" * L"^{-2}" * "]")
-
+        locmaj = matplotlib.ticker.LogLocator(base=10, numticks=12)
+        cb.xaxis.set_major_locator(locmaj)
+        locmin = plt.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=20)
+        cb.xaxis.set_minor_locator(locmin)
+        cb.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+        cb.xaxis.set_label_coords(0.5, 2.0 + 0.06)
         #ax.plot([cylinder.pos_start[2], cylinder.pos_end[2]], [cylinder.pos_start[3], cylinder.pos_end[3]], c="red", alpha=1.0)
 
     subplots_adjust(hspace=0.0, wspace=0.12)
-    plot_name = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/Plots/FigE1.pdf"
+    plot_name = plot_path * "FigE1.png"
 
     println("saving")
     savefig(plot_name, bbox_inches="tight", transparent=false, dpi=400)
