@@ -22,7 +22,8 @@ end
 
 function read_spectra()
 
-    filename = data_path * "spectra_073.dat"
+    filename = data_path * "spectra_relic_072.dat"
+
     f = open(filename, "r")
     Nids = read(f, Int64)
     ids = read!(f, Vector{UInt64}(undef, Nids))
@@ -51,10 +52,13 @@ function plot_spectra_2x1(spectra, ids, t)
         norm=plt.Normalize(vmin=7.0, vmax=14.0))
     sm.set_array([])
 
-    bounds = momentum_bin_boundaries(CRMomentumDistributionConfig(0.1, 1.e5, 24))
+    bounds = momentum_bin_boundaries(CRMomentumDistributionConfig(1.0, 1.e5, 20))
 
     for Nid ∈ 1:length(ids)
 
+        if Int64(ids[Nid]) != 549835254511
+            continue
+        end
         println("id $(ids[Nid])")
         fig = get_figure(2.5)
         plot_styling!()
@@ -63,7 +67,7 @@ function plot_spectra_2x1(spectra, ids, t)
         subplot(get_gs(gs, 0, 0))
         ax = gca()
         ax.set_xlim([0.8e2, 1.2e5])
-        ax.set_ylim([1.e-33, 1.e-21])
+        ax.set_ylim([1.e-39, 1.e-26])
         ax.set_xscale("log")
         ax.set_yscale("log")
         axis_ticks_styling!(ax)
@@ -80,16 +84,18 @@ function plot_spectra_2x1(spectra, ids, t)
                     c=sm.to_rgba(t[i]))
         end
 
-        plot([1.e3, 1.e4], [1.e-25, 1.e-25 * 10.0^(-4)], color="k", linestyle="--", linewidth=2)
-        text(3.e3, 1.e-27, L"q_0 \: = " * "$(-4)", rotation=-45)
+        P0 = 1.0e-30
+        plot([1.e3, 1.e4], P0 .* [1.0, 1.0 * 10.0^(-4)], color="k", linestyle="--", linewidth=2)
+        text(3.e3, 1.e-32, L"q_0 \: = " * "$(-4)", rotation=-45)
 
         get_cr_energy_axis!(ax, "e")
 
         subplot(get_gs(gs, 0, 1))
         ax = gca()
         ax.set_xlim([1.e7, 1.e10])
-#        ax.set_ylim([1.e-41, 1.e-37])
-        #ax.set_ylim([1.e-43, 1.e-39])
+        #ax.set_ylim([1.e-41, 1.e-37])
+        ax.set_ylim([1.e-51, 1.e-43])
+
 
         ax.set_xscale("log")
         ax.set_yscale("log")
@@ -103,8 +109,10 @@ function plot_spectra_2x1(spectra, ids, t)
             ax.plot(ν_arr, spectra[Nid, i].j_nu, c=sm.to_rgba(t[i]))
         end
 
-        plot([1.e8, 1.e9], [2.e-40, 2.e-40 * 10.0^(-0.5)], color="k", linestyle="--", linewidth=2)
-        text(2.e8, 1.e-40, L"\alpha_0 \: = " * "$(-0.5)", rotation=-20)
+        P0 = 1.0e-44
+        plot([1.e8, 1.e9], P0 .* [1.0, 1.0 * 10.0^(-0.5)], color="k", linestyle="--", linewidth=2)
+        text(2.e8, 1.e-44, L"\alpha_0 \: = " * "$(-0.5)", rotation=-10)
+
 
 
         subplot(get_gs(gs, 0, 2))
@@ -117,8 +125,9 @@ function plot_spectra_2x1(spectra, ids, t)
             size=6, width=1
         )
 
-        #plot_name = plot_path * "Fig09.pdf"
-        plot_name = plot_path * "Fig09_$(ids[Nid]).png"
+        plot_name = plot_path * "Fig09_549835254511.pdf"
+        #plot_name = plot_path * "cr_spectra/$(ids[Nid]).png"
+
         savefig(plot_name, bbox_inches="tight")
         close(fig)
     end

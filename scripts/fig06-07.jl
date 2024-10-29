@@ -6,19 +6,20 @@ using PyPlot, PyPlotUtility
 using Printf
 using PyCall
 using ColorSchemes
+using StatsBase, Statistics
 using Distributions
-using StatsBase
 cm = pyimport("cmasher")
 @info "done"
 
 function plot_10Mpc_col(folders)
 
-    filenames = "144MHz_" .* ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
+    filenames = "144MHz_" .* ["Bsim", "beta50", "Pturb", "BFF", "dyn_l", "dyn_h"]
 
-    snaps = ["011", "074", "074", "074"]
+    snaps = ["000", "074", "074", "074"]
 
     Ncols = length(filenames)
-    Nrows = length(folders)
+    Nrows = 4
+
 
     files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_$filename.xz.fits"
              for i ∈ 1:Nrows, filename ∈ filenames]
@@ -57,13 +58,15 @@ function plot_10Mpc_col(folders)
     plot_image_grid(Nrows, Ncols, files, im_cmap, cb_labels,
         vmin_arr, vmax_arr, plot_name,
         cutoffs=[vmin_arr[1] for i = 1:Ncols],
-        mask_bad=trues(Nrows * Ncols),
+        mask_bad=falses(Nrows * Ncols),
+        bad_colors=["w" for i = 1:Ncols],
         upscale=0.8,
         cb_label_offset=0.6,
         dpi=400,
         transparent=false,
         ticks_color="k",
-        colorbar_mode="single";
+        colorbar_mode="single",
+        cutoff_nan=false;
         time_labels, annotate_time,
         log_map,
         annotate_scale,
@@ -81,12 +84,12 @@ plot_10Mpc_col(folders)
 function plot_10Mpc_slope(folders)
 
 
-    filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
+    filenames = ["Bsim", "beta50", "Pturb", "BFF", "dyn_l", "dyn_h"]
 
-    snaps = ["011", "074", "074", "074"]
+    snaps = ["000", "074", "074", "074"]
 
     Ncols = length(filenames)
-    Nrows = length(folders)
+    Nrows = 4
 
     files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_slope_$filename.xz.fits"
              for i ∈ 1:Nrows, filename ∈ filenames]
@@ -141,7 +144,7 @@ end
 
 
 folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
-#plot_10Mpc_slope(folders)
+plot_10Mpc_slope(folders)
 
 
 """
@@ -212,10 +215,9 @@ function plot_slope_histograms(folders, plot_name)
         L"B_\mathrm{dyn ↓}",
         L"B_\mathrm{dyn ↑}"]
 
-    snaps = ["011", "074", "074", "074"]
+    snaps = ["000", "074", "074", "074"]
 
-
-    Bfield_filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
+    Bfield_filenames = ["Bsim", "beta50", "Pturb", "BFF", "dyn_l", "dyn_h"]
 
 
     sim_names = ["SLOW-CR3072", "Coma", "Coma-" * L"D_\mathrm{pp}", "H&B (2007)"]
@@ -299,7 +301,8 @@ function plot_slope_histograms(folders, plot_name)
     plot([0.0], [0.0], color="k", lw=lw, linestyle=":", label=L"\sum \: j_\nu")
 
     handles, labels = gca().get_legend_handles_labels()
-    order = [1, 2, 3, 4, 5, 6]
+    order = 1:6
+
     l = legend([handles[idx] for idx in order], [labels[idx] for idx in order],
         frameon=false, bbox_to_anchor=(-2.0, -0.5), ncol=6, loc="lower center")
 
@@ -312,18 +315,4 @@ folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
 plot_name = plot_path * "Fig07b.pdf"
 
 #plot_slope_histograms(folders, plot_name)
-
-# filenames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
-
-# snaps = ["036", "012", "074", "012", "074"]
-
-# Ncols = length(filenames)
-# Nrows = 5
-
-# α_files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_slope_$filename.xz.fits"
-#          for i ∈ 1:Nrows, filename ∈ filenames]
-
-# jν_files = [map_path * "$(folders[i])/coma_20Mpc_$(snaps[i]).synch_F_beam_1'_$filename.xz.fits"
-#              for i ∈ 1:Nrows, filename ∈ filenames]
-
 

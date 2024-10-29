@@ -15,8 +15,7 @@ cm = pyimport("cmasher")
 
 
 
-Bfield_names = ["Bsim", "beta50", 
-    "01Pturb",
+Bfield_names = ["Bsim", "beta50", "Pturb",
     "BFF", "dyn_l", "dyn_h"]
 
 
@@ -46,24 +45,24 @@ scale_label = "1 Mpc"
 
 plot_name = plot_path * "Fig05a.pdf"
 
-# plot_image_grid(Nrows, Ncols, files, im_cmap, cb_labels,
-#     vmin_arr, vmax_arr, plot_name,
-#     cutoffs=[vmin_arr[1] for i = 1:Ncols],
-#     #mask_bad=trues(Nrows * Ncols),
-#     upscale=2.5,#0.6,
-#     cb_label_offset=0.6,
-#     dpi=400,
-#     transparent=false,
-#     ticks_color="k",
-#     annotation_color="k",
-#     colorbar_mode="single",
-#     read_mode=1;
-#     time_labels, annotate_time,
-#     log_map,
-#     annotate_scale,
-#     scale_kpc,
-#     scale_label,
-# )
+plot_image_grid(Nrows, Ncols, files, im_cmap, cb_labels,
+    vmin_arr, vmax_arr, plot_name,
+    cutoffs=[vmin_arr[1] for i = 1:Ncols],
+    #mask_bad=trues(Nrows * Ncols),
+    upscale=2.5,#0.6,
+    cb_label_offset=0.6,
+    dpi=400,
+    transparent=false,
+    ticks_color="k",
+    annotation_color="k",
+    colorbar_mode="single",
+    read_mode=1;
+    time_labels, annotate_time,
+    log_map,
+    annotate_scale,
+    scale_kpc,
+    scale_label,
+)
 
 
 """
@@ -78,10 +77,10 @@ function plot_radial_B(plot_name)
         L"B_\mathrm{dyn ↓}",
         L"B_\mathrm{dyn ↑}"]
 
-    Bfield_names = ["B_sim", "B_beta", "B_vturb", "B_FF", "B_dyn_l", "B_dyn_h"]
+    Bfield_names = ["B_sim", "B_beta", "B_vturb1", "B_FF", "B_dyn_l", "B_dyn_h"]
     folders = "radial_B/" .* ["box", "zoom_inj", "zoom_dpp"]
 
-    sim_names = ["SLOW-CR3072", "Coma", "Coma-" * L"D_\mathrm{pp}"]
+    sim_names = ["SLOW-CR3072", "Coma", "Coma-" * L"D_\mathrm{pp}" ]
 
     bonafede = readdlm(data_path * "bonafede_sorted.dat")
 
@@ -182,8 +181,8 @@ function plot_radial_B(plot_name)
     close(fig)
 end
 
-folders = ["box", "zoom_inj", "zoom_dpp"]
+
 plot_name = plot_path * "Fig05b.pdf"
 
-plot_radial_B(plot_name)
+#plot_radial_B(plot_name)
 
