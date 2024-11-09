@@ -15,7 +15,8 @@ cm = pyimport("cmasher")
 
 
 
-Bfield_names = ["Bsim", "beta50", "Pturb",
+Bfield_names = ["Bsim", "beta50", 
+    "Pturb",
     "BFF", "dyn_l", "dyn_h"]
 
 
@@ -174,13 +175,12 @@ function plot_radial_B(plot_name)
 
     end
 
-    legend(frameon=false, bbox_to_anchor=(-2.0, -0.4), ncol=4, loc="lower center")
+    legend(frameon=false, bbox_to_anchor=(-2.0, -0.4), ncol=5, loc="lower center")
 
     subplots_adjust(hspace=0.0, wspace=0.0)
     savefig(plot_name, bbox_inches="tight", transparent=false)
     close(fig)
 end
-
 
 plot_name = plot_path * "Fig05b.pdf"
 
