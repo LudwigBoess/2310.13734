@@ -119,7 +119,6 @@ function plot_phase_maps(phase_map_path, plot_name)
         cmap = plt.get_cmap(mass_cmap)
         cmap.set_bad("white")
 
-        ax.grid(true)
 
         # mass
         x_lim, y_lim, phase_map_jν = read_phase_map(filename[Nfile])
