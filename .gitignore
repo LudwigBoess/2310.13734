@@ -12,3 +12,7 @@ scripts/allsky/mhd.slurm
 scripts/allsky/run_B.sh
 scripts/phase_maps/job.slurm
 scripts/phase_maps/job.slurm
+scripts/cic_maps/*.out
+scripts/cic_maps/*.err
+scripts/cic_maps/log/*
+.DS_Store
