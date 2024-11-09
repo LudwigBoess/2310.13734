@@ -1,2 +1,6 @@
 maps/*
 Plots/*
+scripts/cic_maps/*.out
+scripts/cic_maps/*.err
+scripts/cic_maps/log/*
+.DS_Store
