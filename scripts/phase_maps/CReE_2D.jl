@@ -6,7 +6,7 @@ try
     addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))
 catch err
     if isa(err, KeyError)
-        N_tasts_ = 2
+        N_tasts_ = 4
         println("allocating $N_tasts_ normal tasks")
         addprocs(N_tasts_)
     end
@@ -22,16 +22,18 @@ println("loading packages")
 @everywhere using SpectralCRsUtility
 @everywhere using Base.Threads
 @everywhere using Statistics
-@everywhere using PyPlotUtility
+#@everywhere using PyPlotUtility
+@everywhere include("bin_2D.jl")
 println("done")
 flush(stdout);
 flush(stderr);
 
 # mapping settings
-@everywhere const snap = 36
-@everywhere const global sim_path = "path/to/simulation/"
-@everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
-@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_data")
+# @everywhere const snap = 36
+# @everywhere const global sim_path = "path/to/simulation/"
+# @everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+@everywhere const snap_base = "/e/ocean3/Local/3072/nonrad_mhd_crs_new/snapdir_000_z=0/snap_000"
+@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "box")
 @everywhere const global GU = GadgetPhysical(GadgetIO.read_header(snap_base))
 
 
@@ -56,7 +58,7 @@ end
 
     # cr setup 
     Nbins = size(data["CReN"], 1)
-    par = CRMomentumDistributionConfig(0.1, 1.e5, Nbins)
+    par = CRMomentumDistributionConfig(1.0, 1.e5, Nbins)
     bounds = momentum_bin_boundaries(par)
 
     @threads for i = 1:Npart
@@ -85,7 +87,7 @@ end
                 for block ∈ ["MASS", "RHO", "U",
         "CReN", "CReS", "CReC"])
 
-    println("\ttemperature and density")
+    #println("\ttemperature and density")
     flush(stdout)
     flush(stderr)
     T = data["U"] .* GU.T_K
@@ -93,6 +95,7 @@ end
 
     # calculate synchrotron emissivity
     CReE = get_CReE(data)
+    println("maximum CReE = ", maximum(CReE))
 
     phase_CReE = get_phase_map(ne, T, CReE)
     CReE = nothing
@@ -173,5 +176,5 @@ function run_phase_maps(filename)
     write_phase_map(filename, sum_phase_CReE)
 end
 
-filename = map_path * "phase_map_CReE_high.dat"
+filename = map_path * "/phase_map_CReE_high.dat"
 run_phase_maps(filename)

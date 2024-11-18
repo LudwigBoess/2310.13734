@@ -6,7 +6,7 @@ try
     addprocs_slurm(parse(Int64, ENV["SLURM_NTASKS"]))
 catch err
     if isa(err, KeyError)
-        N_tasts_ = 8
+        N_tasts_ = 10
         println("allocating $N_tasts_ normal tasks")
         addprocs(N_tasts_)
     end
@@ -52,19 +52,21 @@ end
 #end
 
 # mapping settings
-@everywhere const snap = 36
-@everywhere const global sim_path = "path/to/simulation/"
-@everywhere const data_path = "path/to/data"
+# @everywhere const snap = 36
+# @everywhere const global sim_path = "path/to/simulation/"
+# @everywhere const data_path = "path/to/data"
+# @everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+@everywhere const global snap_base = "/e/ocean3/Local/3072/nonrad_mhd_crs_new/snapdir_000_z=0/snap_000"
 
-@everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
-
-@everywhere const map_path = data_path * "data/phase_data/"
+@everywhere const map_path = "/e/ocean2/users/lboess/PaperRepos/2310.13734/data/phase_maps/box/"
 
 @everywhere const global GU = GadgetPhysical(GadgetIO.read_header(snap_base))
 
-@everywhere const global center_comov = [247.980, 245.480, 255.290] .* 1.e3
-@everywhere const global center = center_comov .* GU.x_physical
-@everywhere const global radius_limits = [10_000.0, 240_000.0 * GU.x_physical] # for flux
+#@everywhere const global center_comov = [247.980, 245.480, 255.290] .* 1.e3
+#@everywhere const global center = center_comov .* GU.x_physical
+#@everywhere const global radius_limits = [10_000.0, 240_000.0 * GU.x_physical] # for flux
+@everywhere global const center_comov = zeros(3)
+@everywhere const global radius_limits = [0.0, Inf]
 
 @everywhere include(joinpath(@__DIR__, "bin_2D.jl"))
 @everywhere include(joinpath(@__DIR__, "..", "allsky", "Bfld.jl"))
@@ -94,7 +96,7 @@ end
                 for block ∈ ["POS", "MASS", "RHO", "U", "BFLD", "VRMS",
         "CReN", "CReS", "CReC"])
 
-    println("\ttemperature and density")
+    #println("\ttemperature and density")
     flush(stdout)
     flush(stderr)
     ne = data["RHO"] .* GU.rho_ncm3
@@ -146,7 +148,7 @@ end
     elseif Bfield_flag == 2
         return map_path * "phase_map_synch_emissivity_144MHz_B_beta50.dat"
     elseif Bfield_flag == 3
-        return map_path * "phase_map_synch_emissivity_144MHz_B_01Pturb.dat"
+        return map_path * "phase_map_synch_emissivity_144MHz_B_Pturb.dat"
     elseif Bfield_flag == 4
         return map_path * "phase_map_synch_emissivity_144MHz_B_FF.dat"
     elseif Bfield_flag == 5

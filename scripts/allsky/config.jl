@@ -1,19 +1,20 @@
-# path to the package envirnoment
-const global dir_path = joinpath(@__DIR__, "..")
+# # path to the package envirnoment
+# const global dir_path = joinpath(@__DIR__, "..")
 
-# activate the environment
-using Pkg;
-Pkg.activate(dir_path);
+# # activate the environment
+# using Pkg;
+# Pkg.activate(dir_path);
 
 # simulation settings
-const global sim_path = "path/to/simulation/"
-const global snap = 36
-const global snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+#const global sim_path = "/dss/dssfs02/pr62go/pr62go-dss-0001/Local/3072/nonrad_mhd_crs/"
+#const global snap = 36
+#const global snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
+const global snap_base = "/e/ocean3/Local/3072/nonrad_mhd_crs_new/snapdir_000_z=0/snap_000"
 
 # general map settings
-const global Nside = 2048
+const global Nside = 1024
 const global Nfiles = 2048
-const global map_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/maps/allsky/"
+const global map_path = "/e/ocean2/users/lboess/PaperRepos/2310.13734/maps/allsky/"
 const global viewpoint = "slow_1"
 const global kernel = WendlandC4(2)
 
@@ -26,7 +27,7 @@ const global kpc2cm = 3.085678e21
 const global center_comov = [247.980, 245.480, 255.290] .* 1.e3
 const global center = center_comov .* GU.x_physical
 global const radius_limits = [5_000.0, 240_000.0 * GU.x_physical]
-#const global radius_limits = [30_000.0, 300_000.0] # for CReE
+#const global radius_limits = [40_000.0, 300_000.0] # for CReE
 
 """
     find_outside_shell(pos)

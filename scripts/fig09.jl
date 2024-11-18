@@ -1,107 +1,134 @@
-"""
-    Explanatory figure for emissivity scaling with slope and p_inj
-"""
 include(joinpath(@__DIR__, "config.jl"))
 
 @info "loading packages"
-using SpectralCRsUtility
-using GadgetUnits
-using Base.Threads
+
+using GadgetIO, GadgetUnits
 using PyPlot, PyPlotUtility
+using SpectralCRsUtility
+using Printf
+using PyCall
+using DelimitedFiles
+using ProgressMeter
+cm = pyimport("cmasher")
 @info "done"
 
-const global slope_soft = 1.e-6
+struct CR
+    rho::Float64
+    B::Float64
+    Mach::Float64
+    spec::CRMomentumDistribution
+    j_nu::Vector{Float64}
+end
 
-"""
-    find_init_norm(pressure::T, slope::T, bound_low::T, bound_up::T) where T
+function read_spectra()
 
-Find norm of first bin for a given total pressure.
-"""
-function find_init_norm(ϵ::T, slope::T, bound_low::T, bound_up::T) where {T}
+    filename = data_path * "spectra.dat"
+    f = open(filename, "r")
+    Nids = read(f, Int64)
+    ids = read!(f, Vector{UInt64}(undef, Nids))
+    Nfiles = read(f, Int64)
+    spectra = Matrix{CR}(undef, Nids, Nfiles)
 
-    norm_cnst = ϵ / (4π * SpectralCRsUtility.cL * bound_low^4)
+    for Nfile ∈ 1:Nfiles, Nid ∈ 1:Nids
+        rho = read(f, Float64)
+        B = read(f, Float64)
+        Mach = read(f, Float64)
 
-    init_norm = norm_cnst * (4 - slope) / ((bound_up / bound_low)^(4 - slope) - 1)
+        bound = read!(f, Vector{Float64}(undef, 41))
+        norm = read!(f, Vector{Float64}(undef, 40))
+        j_nu = read!(f, Vector{Float64}(undef, 50))
 
-    if (4 - slope_soft) < slope < (4 + slope_soft)
+        spectra[Nid, Nfile] = CR(rho, B, Mach, CRMomentumDistribution(bound, norm), j_nu)
+    end
+    close(f)
 
-        slope_var = (slope - 4) / slope_soft
-        init_norm2 = norm_cnst / log(bound_up / bound_low)
+    return ids, spectra
+end
 
-        if !iszero(slope_var)
-            return init_norm * slope_var + init_norm2 * (1 - slope_var)
-        else
-            return init_norm2
+function plot_spectra_2x1(spectra, ids, t)
+
+    sm = plt.cm.ScalarMappable(cmap=cm.sapphire,
+        norm=plt.Normalize(vmin=7.0, vmax=14.0))
+    sm.set_array([])
+
+    bounds = momentum_bin_boundaries(CRMomentumDistributionConfig(1.0, 1.e5, 20))
+
+    for Nid ∈ 1:length(ids)
+
+        if Int64(ids[Nid]) != 549903732508 #549835254511
+            continue
         end
+        println("id $(ids[Nid])")
+        fig = get_figure(2.5)
+        plot_styling!()
+        gs = plt.GridSpec(1, 3, hspace=0.0, wspace=0.3, width_ratios=[1, 1, 0.05], figure=fig)
+
+        subplot(get_gs(gs, 0, 0))
+        ax = gca()
+        ax.set_xlim([0.8e2, 1.2e5])
+        ax.set_ylim([1.e-36, 1.e-22])
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        axis_ticks_styling!(ax)
+
+        xlabel("Dimensionless Momentum  " * L"\hat{p}" * " [" * L"(m_e \: c)^{-1}" * "]")
+        ylabel("Distribution Function  " * L"f(\hat{p})" * " [arb. units]")
+
+        for bound ∈ bounds 
+            axvline(bound, color="k", linestyle="--", linewidth=1, alpha=0.2)
+        end
+
+        @showprogress for i ∈ 1:length(t)
+            ax.plot(spectra[Nid, i].spec.bound[1:end-1], spectra[Nid, i].spec.norm, 
+                    c=sm.to_rgba(t[i]))
+        end
+
+        P0 = 1.0e-26
+        plot([1.e3, 1.e4], P0 .* [1.0, 1.0 * 10.0^(-4)], color="k", linestyle="--", linewidth=2)
+        text(3.e3, 1.e-28, L"q_0 \: = " * "$(-4)", rotation=-45)
+        get_cr_energy_axis!(ax, "e")
+
+        subplot(get_gs(gs, 0, 1))
+        ax = gca()
+        ax.set_xlim([1.e7, 1.e10])
+        ax.set_ylim([1.e-46, 1.e-38])
+        #ax.set_ylim([1.e-51, 1.e-43])
+
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        axis_ticks_styling!(ax)
+
+        xlabel("Obs. Frequency  " * L"\nu" * " [Hz]")
+        ylabel("Synch. Emissivity  " * L"j_\nu" * " [erg s" * L"^{-1}" * "Hz" * L"^{-1}" * "cm" * L"^{-3}" * "]")
+        
+        ν_arr = 10.0 .^ (LinRange(7, 10, 50))
+        @showprogress for i ∈ 1:length(t)
+            ax.plot(ν_arr, spectra[Nid, i].j_nu, c=sm.to_rgba(t[i]))
+        end
+        P0 = 1.0e-39
+        plot([1.e8, 1.e9], P0 .* [1.0, 1.0 * 10.0^(-0.5)], color="k", linestyle="--", linewidth=2)
+        text(2.e8, 1.e-39, L"\alpha_0 \: = " * "$(-0.5)", rotation=-10)
+
+
+        subplot(get_gs(gs, 0, 2))
+        cax = gca()
+        cb = colorbar(sm, cax=cax, fraction=0.046)
+        cb.set_label("Time  " * L"t" * " [Gyr]")
+        cb.ax.tick_params(
+            direction="in",
+            which="major",
+            size=6, width=1
+        )
+
+        plot_name = plot_path * "Fig09.pdf"
+        savefig(plot_name, bbox_inches="tight")
+        close(fig)
     end
 
-    return init_norm
 end
 
 
-function get_phase_map(p_range, q_range, Nbins)
+ids, spectra = read_spectra()
+times = readdlm(data_path * "times.txt")[:,1]
 
-    GU = GadgetPhysical()
-
-    B = 1.0e-6
-    pmax = 1.e6
-    ϵ_cr = 1.0
-
-    ϵ_cr_GU = ϵ_cr * GU.x_cgs^3 / GU.E_cgs
-
-    j_nu = Matrix{Float64}(undef, Nbins, Nbins)
-
-    for i = 1:Nbins, j = 1:Nbins
-
-        p_min = p_range[i]
-        q = q_range[j]
-
-        par = CRMomentumDistributionConfig(p_min, pmax, 96)
-        bounds = momentum_bin_boundaries(par)
-
-        f_0 = find_init_norm(ϵ_cr_GU, q, p_min, pmax)
-        fp = [f_0 * 10.0^(j * par.bin_width * (-q)) for j = 0:par.Nbins-1] .* GU.CR_norm
-
-        fq = q .* ones(par.Nbins)
-        cut = pmax
-
-        j_nu[i, j] = synchrotron_emission(fp, fq, cut, B, bounds, integrate_pitch_angle=false)
-
-
-    end
-
-    return j_nu
-end
-
-function plot_scaling(q_range, p_range, j_nu, plot_name)
-
-    c_lim = [1.e-34, 1.e-27]
-    levels = 10.0 .^ LinRange(-34, -27, floor((34 - 27) * 2))
-
-    fig = get_figure(1.0)
-    plot_styling!()
-    ax = gca()
-    ax.set_yscale("log")
-    xlabel("Spectral Slope  " * L"q")
-    ylabel("Injection Momentum  " * L"\hat{p}_\mathrm{inj}" * "  [" * L"(m_e c)^{-1}" * "]")
-    im = pcolormesh(q_range, p_range, j_nu,
-        cmap="YlGnBu", norm=matplotlib.colors.LogNorm(vmin=c_lim[1], vmax=c_lim[2]))
-
-    CS = contour(q_range, p_range, j_nu, levels=levels, colors="gray",
-        linewidths=1, linestyles="dashed")
-
-    get_colorbar_right(ax, im, "Synchrotron Emissivity  " * L"j_{\nu = 144 \: \mathrm{MHz}}" * " [erg s" * L"^{-1}" * " Hz" * L"^{-1}" * "cm" * L"^{-3}" * "]")
-
-    savefig(plot_name, bbox_inches="tight", dpi=500)
-    close(fig)
-end
-
-Nbins = 100
-p_range = 10.0 .^ LinRange(-1, 1, Nbins)
-q_range = LinRange(4, 6, Nbins)
-
-j_nu = get_phase_map(p_range, q_range, Nbins)
-
-plot_name = plot_path * "Fig09.pdf"
-
-plot_scaling(q_range, p_range, j_nu, plot_name)
+plot_spectra_2x1(spectra, ids, times)

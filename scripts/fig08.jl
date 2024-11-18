@@ -1,194 +1,108 @@
 include(joinpath(@__DIR__, "config.jl"))
 include(joinpath(@__DIR__, "shared.jl"))
 
-@info "loading packages"
-using GadgetIO, GadgetUnits
 using PyPlot, PyPlotUtility
-using Statistics
 using Printf
-using ProgressMeter
-using PyCall
-# needs to by imported by hand to make inset axis
-inset_locator = pyimport("mpl_toolkits.axes_grid1.inset_locator")
-axes_divider = pyimport("mpl_toolkits.axes_grid1.axes_divider")
-@info "done"
+using DelimitedFiles
 
-function plot_phase_maps(data_path, plot_name)
+function plot_spectra(spectra_path, folders, sim_names, Bfield_names, plot_name)
 
     Bfield_models = [L"B_\mathrm{sim}",
-        L"B_{\beta = 50}",
-        L"B_{\mathcal{F} = 0.1}",
+        L"B_{\beta}",
+        L"B_{\mathcal{F}}",
         L"B_\mathrm{ff}",
         L"B_\mathrm{dyn ↓}",
         L"B_\mathrm{dyn ↑}"]
 
-    filename = data_path .* ["box/phase_map_synch_emissivity_144MHz_$B.dat"
-                             for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
-        "B_FF", "B_dyn_l", "B_dyn_h"]
-    ]
-
-    filename_1D = data_path .* ["box/bin_1D_synch_emissivity_144MHz_$B.dat"
-                                for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
-        "B_FF", "B_dyn_l", "B_dyn_h"]
-    ]
-
-    filename_1D_zoom = data_path .* ["zoom_inj/bin_1D_synch_emissivity_144MHz_$B.dat"
-                                     for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
-        "B_FF", "B_dyn_l", "B_dyn_h"]
-    ]
-
-    filename_1D_zoom_Dpp_low = data_path .* ["zoom_dpp_low/bin_1D_synch_emissivity_144MHz_$B.dat"
-                                             for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
-        "B_FF", "B_dyn_l", "B_dyn_h"]
-    ]
-
-
-    filename_1D_zoom_Dpp_high = data_path .* ["zoom_dpp_high/bin_1D_synch_emissivity_144MHz_$B.dat"
-                                              for B ∈ ["B_sim", "B_beta50", "B_01Pturb",
-        "B_FF", "B_dyn_l", "B_dyn_h"]
-    ]
-
-
-    x_lim, y_lim, phase_map_jν = read_phase_map(filename[1])
-
-    lw = 3
-    xlabel_text = "Electron Density  " * L"n_e" * "  [cm" * L"^{-3}]"
-    ylabel_text = "Synch. Emissivity  " * L"j_\nu" * "  [erg s" * L"^{-1}" * " Hz" * L"^{-1}" * " cm" * L"^{-3}]"
-
-    X = 10.0 .^ LinRange(log10(x_lim[1]), log10(x_lim[2]), size(phase_map_jν, 1))
-    Y = 10.0 .^ LinRange(log10(y_lim[1]), log10(y_lim[2]), size(phase_map_jν, 2))
-
-    mass_cmap = "bone_r"
-    mass_label = "Mass " * L"M \:\: [M_\odot]"
-    c_lim = [1.e7, 1.e14]
-
-    color = "k"
-    alpha_ref = 1.0
-
-    height_ratios = [0.05, 1, 1]
-
-    x_pixels = 1_000
-    legend_font_size = 12
-    fig = get_figure(1.5; x_pixels)
-    plot_styling!(x_pixels; color, legend_font_size)
-
-    gs = plt.GridSpec(3, 3, figure=fig; height_ratios)
-
-    sm = plt.cm.ScalarMappable(norm=matplotlib.colors.LogNorm(
-            vmin=c_lim[1], vmax=c_lim[2]),
-        cmap=mass_cmap)
-    sm.set_array([])
+    Nrows = 2
+    Ncols = length(folders)
 
     sm2 = plt.cm.ScalarMappable(cmap=PyPlot.cm.magma,
-        norm=plt.Normalize(vmin=0, vmax=4.5))
+        norm=plt.Normalize(vmin=0, vmax=6.5))
     sm2.set_array([])
 
-    subplot(get_gs(gs, 0, 0:3))
-    cax = gca()
-    cb = colorbar(sm, cax=cax, orientation="horizontal")
+    x_pixels = 1100
+    fig = get_figure(1.5; x_pixels)
+    plot_styling!(x_pixels, axis_label_font_size=14)
+    gs = plt.GridSpec(Nrows, Ncols, figure=fig)
 
-    cb.set_label(mass_label)
-    cb_ticks_styling!(cb)
-    cax.xaxis.set_ticks_position("top")
-    cax.xaxis.set_label_position("top")
-    cb.ax.xaxis.set_label_coords(0.5, 2.8)
+    for i = 0:Ncols-1
 
-
-    Nfile = 1
-
-    for row = 1:2, col = 0:2
-
-        println("row $row, col $col")
-        subplot(get_gs(gs, row, col))
-        ax = gca()
-
-        axis_ticks_styling!(ax; color)
+        # energy spectrum
+        ax = subplot(get_gs(gs, 0, i))
+        axis_ticks_styling!(ax)
         ax.set_xscale("log")
         ax.set_yscale("log")
-        ax.set_xlim([1.e-9, 1.0])
-        ax.set_ylim([1.e-52, 1.e-37])
-        ax.set_facecolor("white")
+        ax.set_xlim(8, 2e5)
+        # ax.set_ylim(1e-3, 1e2)
+        # ax.set_ylim(1e9, 1e14)
+        ax.set_ylim(1e-51, 1e-30)
 
-        if row == 1
-            ax.set_xticklabels([])
+        ax.set_xlabel(L"\hat{p}" * " [" * L"(m_e c)^{-1}" * "]")
+
+        if i == 0
+            # ax.set_ylabel(L"N_e" * " [arb. units]")
+            ax.set_ylabel(L"f(p)" * " [arb. units]")
         else
-            if col == 1
-                xlabel(xlabel_text)
-            end
+            ax.set_yticklabels([])
         end
 
-        if col == 0 && row == 1
-            ylabel(ylabel_text)
-            ax.yaxis.set_label_coords(-0.2, 0.05)
+        filename = spectra_path * "$(folders[i+1])/f_spectrum.dat"
+        data = readdlm(filename)
+        plot(data[:, 1], data[:, 2], color="darkblue", lw=3)
+        text(1.e5, 1.0e-32, sim_names[i+1], fontsize=20, horizontalalignment="right")
+
+        plot([4.e2, 4.e3], [1.e-35, 1.e-39], color="k", lw=2, linestyle="--")
+        text(7.e2, 3.e-38, L"q = -4", fontsize=20, rotation=-35)
+
+        get_cr_energy_axis!(ax, "e")
+
+        # synchrotron spectrum
+        ax = subplot(get_gs(gs, 1, i))
+        axis_ticks_styling!(ax)
+
+        ax.set_xscale("log")
+        ax.set_yscale("log")
+        ax.set_xlim(8.0, 2.e4)
+        ax.set_ylim(1e15, 1e20)
+        ax.set_xlabel(L"\nu" * " [MHz]")
+
+        if i == 0
+            ax.set_ylabel(L"P_\nu" * " [W Hz" * L"^{-1}" * "]")
+        else
+            ax.set_yticklabels([])
         end
 
-        cmap = plt.get_cmap(mass_cmap)
-        cmap.set_bad("white")
-
-        ax.grid(true)
-
-        # mass
-        x_lim, y_lim, phase_map_jν = read_phase_map(filename[Nfile])
-        phase_map_jν .*= 8.479961392950551e7 # multiply with particle mass 
-        im1 = pcolormesh(X, Y, phase_map_jν,
-            cmap=mass_cmap,
-            norm=matplotlib.colors.LogNorm(vmin=c_lim[1], vmax=c_lim[2]))
-
-        if Nfile > 0
-            ne_bins, jnu_mean = read_1D_data(filename_1D[Nfile])
-            sel = findall(ne_bins .< 5.e-9)
-            jnu_mean[sel] .= NaN
-            sel = findall(ne_bins .> 3.e-1)
-            jnu_mean[sel] .= NaN
-            plot(ne_bins, jnu_mean, alpha=alpha_ref,
-                color=sm2.to_rgba(1), lw=lw, label="SLOW-CR3072" * L"^3")
-
-            ne_bins, jnu_mean = read_1D_data(filename_1D_zoom[Nfile])
-            sel = findall(ne_bins .< 5.e-9)
-            jnu_mean[sel] .= NaN
-            sel = findall(ne_bins .> 3.e-1)
-            jnu_mean[sel] .= NaN
-            plot(ne_bins, jnu_mean, alpha=alpha_ref,
-                color=sm2.to_rgba(2), lw=lw, label="Coma")#L"\textsc{Coma}")
-
-            ne_bins, jnu_mean = read_1D_data(filename_1D_zoom_Dpp_low[Nfile])
-            sel = findall(ne_bins .< 5.e-9)
-            jnu_mean[sel] .= NaN
-            sel = findall(ne_bins .> 3.e-1)
-            jnu_mean[sel] .= NaN
-            plot(ne_bins, jnu_mean, alpha=alpha_ref,
-                color=sm2.to_rgba(3), lw=lw,
-                label="Coma-" * L"D_\mathrm{pp}" * "-Low")
-
-            ne_bins, jnu_mean = read_1D_data(filename_1D_zoom_Dpp_high[Nfile])
-            sel = findall(ne_bins .< 5.e-9)
-            jnu_mean[sel] .= NaN
-            sel = findall(ne_bins .> 3.e-1)
-            jnu_mean[sel] .= NaN
-            plot(ne_bins, jnu_mean, alpha=alpha_ref,
-                color=sm2.to_rgba(4), lw=lw,
-                label="Coma-" * L"D_\mathrm{pp}" * "-High")
+        for j = 1:length(Bfield_models)
+            filename = spectra_path * "$(folders[i+1])/synch_spectrum_$(Bfield_names[j]).dat"
+            data = readdlm(filename)
+            plot(data[:, 1] .* 1.e-6, data[:, 2], label=Bfield_models[j],
+                color=sm2.to_rgba(j), lw=3)
         end
 
-
-        text(1.e-8, 1.e-39, Bfield_models[Nfile], color="k")
-
-        errorbar([1.e-5], [1.e-44], xerr=[5.e-6], yerr=[7.e-45], uplims=true, ecolor="k", color="k")
-
-        Nfile += 1
+        P0 = 1.e19
+        plot([5.e1, 5.e2], P0 .* [1.0, 10.0^(-1.5)], color="k", lw=3, linestyle="--")
+        text(9.e1, 1.5e18, L"\alpha_\nu = -1.5", fontsize=20, rotation=-40)
     end
 
-    subplot(get_gs(gs, 1, 1))
-    ax = gca()
-    legend(frameon=false, bbox_to_anchor=(0.5, -1.5), ncol=4, loc="lower center")
+    handles, labels = gca().get_legend_handles_labels()
+    #order = [1, 6, 2, 3, 4, 5]
+    order = collect(1:6)
+    l = legend([handles[idx] for idx in order], [Bfield_models[idx] for idx in order],
+        frameon=false, bbox_to_anchor=(-0.5, -0.5), ncol=6, loc="lower center")
 
-    subplots_adjust(hspace=0.05)
+    subplots_adjust(hspace=0.3, wspace=0.0)
     savefig(plot_name, bbox_inches="tight", transparent=false)
     close(fig)
 end
 
-data_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/phase_maps/"
+spectra_path = data_path * "spectra/"
+folders = ["box", "zoom_inj", "zoom_dpp"]
+Bfield_names = ["sim", "beta", "vturb1", "ff", "dyn_l", "dyn_h"]
+
+sim_names = ["SLOW-CR3072" * L"^3",
+             "Coma",
+             "Coma-" * L"D_{\mathrm{pp}}"]
+
 plot_name = plot_path * "Fig08.pdf"
-
-plot_phase_maps(data_path, plot_name)
-
+plot_spectra(spectra_path, folders, sim_names, Bfield_names, plot_name)

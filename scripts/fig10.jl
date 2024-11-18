@@ -1,4 +1,5 @@
 include(joinpath(@__DIR__, "config.jl"))
+include(joinpath(@__DIR__, "shared.jl"))
 
 @info "loading packages"
 using GadgetIO, GadgetUnits
@@ -13,8 +14,9 @@ using PyCall
 inset_locator = pyimport("mpl_toolkits.axes_grid1.inset_locator")
 @info "done"
 
-function plot_shob_phase_map_compare(fi1, fi2, c_lim,
-    plot_name; transparent=false)
+function plot_phase_map(mass_map, x_lim, y_lim, c_lim, cmap,
+    contour_map, contour_limits, contour_label,
+    plot_name, transparent=false)
 
     if transparent
         color = "w"
@@ -22,18 +24,11 @@ function plot_shob_phase_map_compare(fi1, fi2, c_lim,
         color = "k"
     end
 
-    sm2 = plt.cm.ScalarMappable(cmap=PyPlot.cm.magma,
-        norm=plt.Normalize(vmin=0, vmax=4.5))
-    sm2.set_array([])
-
-    x_lim, y_lim, phase_map = read_phase_map(fi1)
-    mass_map = phase_map .* 8.479961392950551e7
-
     xlabel_text = "Electron Density  " * L"n_e" * "  [cm" * L"^{-3}]"
-    ylabel_text = "Shock Obliquity  " * L"\theta_B" * "  [" * L"^\circ" * "]"
+    ylabel_text = "Temperature  " * L"T" * "  [K]"
 
-    X = 10.0 .^ LinRange(x_lim[1], x_lim[2], size(mass_map, 1))
-    Y = LinRange(y_lim[1], y_lim[2], size(mass_map, 2))
+    X = 10.0 .^ LinRange(log10(x_lim[1]), log10(x_lim[2]), size(mass_map, 1))
+    Y = 10.0 .^ LinRange(log10(y_lim[1]), log10(y_lim[2]), size(mass_map, 2))
 
     mass_cmap = "bone_r"
     mass_label = "Mass " * L"M \:\: [M_\odot]"
@@ -44,7 +39,7 @@ function plot_shob_phase_map_compare(fi1, fi2, c_lim,
     fig = get_figure(1.0, x_pixels=900)
     plot_styling!(900; color)
 
-    gs = plt.GridSpec(2, 1, figure=fig; height_ratios)
+    gs = plt.GridSpec(2, 2, figure=fig, width_ratios=[1, 0.05]; height_ratios)
 
     sm = plt.cm.ScalarMappable(norm=matplotlib.colors.LogNorm(
             vmin=c_lim[1], vmax=c_lim[2]),
@@ -66,41 +61,39 @@ function plot_shob_phase_map_compare(fi1, fi2, c_lim,
 
     axis_ticks_styling!(ax; color)
     ax.set_xscale("log")
-    #ax.set_xlim([X[1], X[end]])
-    ax.set_xlim([2.e-9, 2.e-1])
-    ax.set_ylim([Y[1], Y[end]])
+    ax.set_yscale("log")
 
     ylabel(ylabel_text)
     xlabel(xlabel_text)
+
+    cmap = plt.get_cmap(cmap)
+    cmap.set_bad("white")
+
+    println("maximum(mass_map) = ", maximum(mass_map))
+    println("maximum(contour_map) = ", maximum(contour_map))
 
     # mass
     im1 = pcolormesh(X, Y, mass_map,
         cmap=mass_cmap,
         norm=matplotlib.colors.LogNorm(vmin=c_lim[1], vmax=c_lim[2]))
 
-    # get peak values 
-    x_lim, y_lim, phase_map = read_phase_map(fi2)
+    cont1 = contour(X, Y, contour_map,
+        levels=10.0 .^ LinRange(log10(contour_limits[1]),
+            log10(contour_limits[2]), 20),
+        cmap=cmap,
+        norm=matplotlib.colors.LogNorm(vmin=contour_limits[1], vmax=contour_limits[2]),
+        alpha=0.5)
 
-    θ_mean = Vector{Float64}(undef, size(phase_map, 2))
-    for i = 1:length(θ_mean)
-        θ_mean[i] = Y[findmax(phase_map[:, i])[2]]
-    end
+    subplot(get_gs(gs, 1, 1))
 
-    θ_mean[X.<1.e-8] .= NaN
-    θ_mean[X.>1.e-1] .= NaN
-    plot(X, θ_mean, color=sm2.to_rgba(4), lw=4, label="Coma")
-
-    # get peak values 
-    θ_mean = Vector{Float64}(undef, size(mass_map, 2))
-    for i = 1:length(θ_mean)
-        θ_mean[i] = Y[findmax(mass_map[:, i])[2]]
-    end
-
-    θ_mean[X.<1.e-8] .= NaN
-    θ_mean[X.>1.e-1] .= NaN
-    plot(X, θ_mean, color=sm2.to_rgba(2), lw=4, label="SLOW-CR3072" * L"^3")
-
-    legend(frameon=false)
+    cax = gca()
+    sm = plt.cm.ScalarMappable(norm=matplotlib.colors.LogNorm(
+            vmin=contour_limits[1], vmax=contour_limits[2]),
+        cmap=cmap)
+    sm.set_array([])
+    cb = colorbar(sm, cax=cax, use_gridspec=true)
+    cb.set_label(contour_label)
+    cb_ticks_styling!(cb)
 
     subplots_adjust(hspace=0.05, wspace=0.05)
 
@@ -108,16 +101,19 @@ function plot_shob_phase_map_compare(fi1, fi2, c_lim,
     close(fig)
 end
 
-data_path = "/gpfs/work/pn68va/di67meg/PaperRepos/SynchWeb/data/"
-c_lim = [1.e9, 3.e12]
-fi1 = data_path * "phase_maps/box/phase_2D_SHOB.dat"
-fi2 = data_path * "phase_maps/zoom_inj/phase_2D_SHOB.dat"
-x_lim, y_lim, phase_map = read_phase_map(fi1)
-mass_map = phase_map .* 8.479961392950551e7
 
-maximum(mass_map)
+
+filename = data_path * "phase_maps/box/phase_map_mass2.dat"
+x_lim, y_lim, phase_map = read_phase_map(filename)
+
+filename = data_path * "phase_maps/box/phase_map_CReE_high.dat"
+x_lim, y_lim, contour_map = read_phase_map(filename)
+
+c_lim = [1.e10, 1.e16]
+contour_limits = [1.e52, 1.e58]
+contour_label = L"E_\mathrm{CR,e > 1 GeV}" * " [erg]"
 
 plot_name = plot_path * "Fig10.pdf"
 
-plot_shob_phase_map_compare(fi1, fi2, c_lim,
-    plot_name, transparent=false)
+plot_phase_map(phase_map, x_lim, y_lim, c_lim, "Blues_r", contour_map, 
+                contour_limits, contour_label, plot_name)

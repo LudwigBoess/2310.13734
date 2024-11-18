@@ -21,7 +21,6 @@ println("loading packages")
 @everywhere using SpectralCRsUtility
 @everywhere using Base.Threads
 @everywhere using Statistics
-@everywhere using PyPlotUtility
 println("done")
 flush(stdout); flush(stderr)
 
@@ -42,13 +41,15 @@ end
 
 
 # mapping settings
-@everywhere const snap = 36
-@everywhere const global sim_path = "path/to/simulation/"
+@everywhere const snap = 12
+# @everywhere const global sim_path = "/e/ocean3/Local/3072/nonrad_mhd_crs/"
+@everywhere const global sim_path = "/e/ocean2/users/lboess/LocalUniverseZooms/L5/mhd_cr8p24eDpp_5e-17/"
 @everywhere const snap_base = sim_path * "snapdir_$(@sprintf("%03i", snap))/snap_$(@sprintf("%03i", snap))"
-@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_data")
+@everywhere const map_path = joinpath(@__DIR__, "..", "..", "data", "phase_maps", "zoom_dpp_high")
 
 @everywhere global const GU = GadgetPhysical(GadgetIO.read_header(snap_base))
 
+@everywhere include(joinpath(@__DIR__, "bin_2D.jl"))
 @everywhere include(joinpath(@__DIR__, "..", "allsky", "Bfld.jl"))
 @everywhere include(joinpath(@__DIR__, "..", "allsky", "synchrotron.jl"))
 
@@ -101,7 +102,7 @@ end
     return phase_P_nu
 end
 
-@everywhere function synch_phase_map_of_subfile(subfile) 
+@everywhere function synch_phase_map_of_subfile(subfile)
     if Bfield_flag == 1
         return synch_phase_map_of_subfile(subfile, Bfield_sim, "sim")
     elseif Bfield_flag == 2
@@ -111,30 +112,29 @@ end
     elseif Bfield_flag == 4
         return synch_phase_map_of_subfile(subfile, Bfield_FF, "ff")
     elseif Bfield_flag == 5
-        return synch_phase_map_of_subfile(subfile, Bfield_Caretti, "dyn_l")
+        return synch_phase_map_of_subfile(subfile, Bfield_dyn_l, "dyn_l")
     elseif Bfield_flag == 6
-        return synch_phase_map_of_subfile(subfile, Bfield_dynamo, "dyn_h")
+        return synch_phase_map_of_subfile(subfile, Bfield_dyn_h, "dyn_h")
     end
 end
 
 @everywhere function get_synch_phase_map_filename()
 
     if Bfield_flag == 1
-        return map_path * "phase_map_synch_144MHz_B_sim.dat"
+        return map_path * "/bin_2D_synch_power_144MHz_B_sim.dat"
     elseif Bfield_flag == 2
-        return map_path * "phase_map_synch_144MHz_B_beta50.dat"
+        return map_path * "/bin_2D_synch_power_144MHz_B_beta50.dat"
     elseif Bfield_flag == 3
-        return map_path * "phase_map_synch_144MHz_B_01Pturb.dat"
+        return map_path * "/bin_2D_synch_power_144MHz_B_01Pturb.dat"
     elseif Bfield_flag == 4
-        return map_path * "phase_map_synch_144MHz_B_FF.dat"
+        return map_path * "/bin_2D_synch_power_144MHz_B_FF.dat"
     elseif Bfield_flag == 5
-        return map_path * "phase_map_synch_144MHz_B_dynamo_Carretti.dat"
+        return map_path * "/bin_2D_synch_power_144MHz_B_dyn_l.dat"
     elseif Bfield_flag == 6
-        return map_path * "phase_map_synch_144MHz_B_dynamo.dat"
+        return map_path * "/bin_2D_synch_power_144MHz_B_dyn_h.dat"
     end
 
 end
-
 
 @everywhere function write_phase_map(filename, phase_map)
     Nbins = size(phase_map,1)
@@ -170,7 +170,7 @@ function run_phase_maps(filename)
         remote_do(do_work, p, jobs, results)
     end
     
-    n = 2048
+    n = 16
     #n = 4
 
     sum_phase_P_nu = zeros(Float64, Nbins, Nbins) 
