@@ -2,10 +2,13 @@ using GadgetIO, GadgetUnits
 using Healpix
 using SPHtoGrid, SPHKernels
 
+struct ClusterPositions
+    name::String
+    pos::Vector{Float64}
+    rvir::Float64
+end
 
-"""
-    New
-"""
+
 named_clusters_pos = [
     ClusterPositions("Centaurus", [225160.875, 256677.5625, 242031.765625], 1771.7005615234375),
     ClusterPositions("Coma", [245040.453125, 327781.84375, 246168.6875], 2177.5625),

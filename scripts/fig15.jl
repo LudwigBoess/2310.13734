@@ -51,33 +51,33 @@ function write_baseline_image(map_path, snap, Bname, smooth_size)
 
 end
 
-Bnames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
-folders = ["box", 
-        "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"] .* "/"
-snaps = ["036", 
-    "012", "074", "012", "012"]
+# Bnames = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
+# folders = ["box", 
+#         "zoom_inj", "zoom_dpp_1e-17", "zoom_dpp_5e-17", "zoom_HB07"] .* "/"
+# snaps = ["036", 
+#     "012", "074", "012", "012"]
 
-snapshot_file = "/path/to/snapshot/snap_000"
+# snapshot_file = "/path/to/snapshot/snap_000"
 
-# read the Gadget file header
-h = read_header(snapshot_file)
+# # read the Gadget file header
+# h = read_header(snapshot_file)
 
-# define a cosmology from the header
-c = cosmology(h)
+# # define a cosmology from the header
+# c = cosmology(h)
 
-# observed redshift of Coma
-z = 0.0231
+# # observed redshift of Coma
+# z = 0.0231
 
-# lofar
-nu = 144.0u"MHz"
-Dmin = 0.1u"km"
-Smax = 0.6u"c0"/nu/Dmin |> upreferred
-theta = Smax * 1.0u"rad" |> u"arcminute"
+# # lofar
+# nu = 144.0u"MHz"
+# Dmin = 0.1u"km"
+# Smax = 0.6u"c0"/nu/Dmin |> upreferred
+# theta = Smax * 1.0u"rad" |> u"arcminute"
 
-# scale of missing baseline contribution in kpc
-smooth_scale = arcmin_to_kpc(c, theta, z)
+# # scale of missing baseline contribution in kpc
+# smooth_scale = arcmin_to_kpc(c, theta, z)
 
-println("Lofar missing baseline scale in Coma: ", theta, "  ", smooth_scale)
+# println("Lofar missing baseline scale in Coma: ", theta, "  ", smooth_scale)
 
 
 # uncomment to run baseline computation
@@ -88,7 +88,7 @@ println("Lofar missing baseline scale in Coma: ", theta, "  ", smooth_scale)
 
 
 Bfield_names = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
-files = @. map_path * "coma/zoom_dpp_5e-17/coma_20Mpc_$(@sprintf("%03i", 12)).baseline_" * Bfield_names * ".xz.fits"
+files = @. map_path * "coma/zoom_inj/coma_20Mpc_$(@sprintf("%03i", 12)).baseline_" * Bfield_names * ".xz.fits"
 
 Ncols = length(Bfield_names)
 Nrows = 1
@@ -139,7 +139,7 @@ plot_image_grid(Nrows, Ncols, files, im_cmap, cb_labels,
     Boosted
 """
 Bfield_names = ["Bsim", "beta50", "01Pturb", "BFF", "dyn_l", "dyn_h"]
-files = @. map_path * "coma/zoom_dpp_5e-17/coma_20Mpc_$(@sprintf("%03i", 12)).synch_F_beam_1'_144MHz_boosted_" * Bfield_names * ".xz.fits"
+files = @. map_path * "coma/zoom_inj/coma_20Mpc_$(@sprintf("%03i", 12)).synch_F_beam_1'_144MHz_boosted_" * Bfield_names * ".xz.fits"
 
 Ncols = length(Bfield_names)
 Nrows = 1

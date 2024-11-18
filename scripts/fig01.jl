@@ -17,7 +17,7 @@ Plot text annotations for clusters in the given list of `clusters` on the curren
 function plot_text_clusters(ax, clusters)
     for cl ∈ clusters
         txt = ax.text(cl.xpix, cl.ypix, cl.name, fontsize=12, color="w")
-        #txt.set_path_effects([PE.withStroke(linewidth=2, foreground="k")])
+        txt.set_path_effects([PE.withStroke(linewidth=2, foreground="k")])
     end
     return ax
 end
@@ -102,9 +102,6 @@ plot_single_allsky( filename, im_cmap, cb_label, clim_arr, plot_name,
                     contour_linestyle="-",
                     contour_alpha=1.0,
                     contour_color="w",
-                    # transparent=true,
-                    # ticks_color="w",
-                    #annotations=cluster,
                     dpi=dpi,
                     cutoff=clim_arr[1],
                     origin="lower";
@@ -112,7 +109,6 @@ plot_single_allsky( filename, im_cmap, cb_label, clim_arr, plot_name,
                     overplot_function
                     )
 
-# println("plot definition")
 
 filename = "CReE"
 im_cmap = cmr.cosmic
@@ -125,19 +121,13 @@ plot_name = plot_path * "$plot_name.$file_ending"
 
 println("plotting")
 
-# plot_single_allsky(filename, im_cmap, cb_label, clim_arr, plot_name,
-#     time_label="",
-#     log_map=true,
-#     Npixels=2048,
-#     #contour_linestyle="-",
-#     #contour_alpha=1.0,
-#     #contour_color="w",
-#     #annotations=cluster,
-#     transparent=true,
-#     ticks_color="w",
-#     dpi=dpi,
-#     cutoff=clim_arr[1],
-#     origin="lower";
-#     #contour_file,
-#     #overplot_function
-# )
+plot_single_allsky(filename, im_cmap, cb_label, clim_arr, plot_name,
+    time_label="",
+    log_map=true,
+    Npixels=2048,
+    transparent=false,
+    ticks_color="k",
+    dpi=dpi,
+    cutoff=clim_arr[1],
+    origin="lower";
+)

@@ -67,7 +67,6 @@ function plot_spectra_2x1(spectra, ids, t)
         ax = gca()
         ax.set_xlim([0.8e2, 1.2e5])
         ax.set_ylim([1.e-36, 1.e-22])
-        #ax.set_ylim([1.e-39, 1.e-26])
         ax.set_xscale("log")
         ax.set_yscale("log")
         axis_ticks_styling!(ax)
@@ -121,9 +120,7 @@ function plot_spectra_2x1(spectra, ids, t)
             size=6, width=1
         )
 
-        plot_name = plot_path * "Fig09_549903732508.pdf"
-#        plot_name = plot_path * "Fig09_549835254511.pdf"
-        #plot_name = plot_path * "cr_spectra_2/$(ids[Nid]).png"
+        plot_name = plot_path * "Fig09.pdf"
         savefig(plot_name, bbox_inches="tight")
         close(fig)
     end

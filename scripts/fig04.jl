@@ -38,7 +38,6 @@ function plot_general_quantities(map_path, folders)
 
     log_map = trues(Ncols * Nrows)
     annotate_scale = trues(Ncols * Nrows)
-    #r_circles = [2642.8608, 1837.9205]
     r_circles = [3895.850659851734, 2709.2852602308144]
 
     vmin_arr = [1.e-4, 2.e-4, 2.e48, 4e-19]

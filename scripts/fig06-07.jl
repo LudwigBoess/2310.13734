@@ -77,7 +77,7 @@ end
 
 
 folders = ["box", "zoom_inj", "zoom_dpp", "zoom_HB"]
-#plot_10Mpc_col(folders)
+plot_10Mpc_col(folders)
 
 
 function plot_10Mpc_slope(folders)
@@ -256,7 +256,6 @@ function plot_slope_histograms(folders, plot_name)
         end
         if col == 1
             ylabel("Rel. Number of Pixels  " * L"N/N_\mathrm{tot}", fontsize=legend_font_size)
-            #ax.yaxis.set_label_coords(-0.2, 0.05)
         else
             ax.set_yticklabels([])
         end

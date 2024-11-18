@@ -26,15 +26,15 @@ im_cmap = "magma"
 cb_label = "Magnetic Field Strength  " * L"\vert B \vert" * " [G]"
 clim_arr = [1.e-9, 1.0e-5]
 plot_name = plot_path * "Fig02.$file_ending"
-# plot_multiple_allsky(filenames, im_cmap, cb_label, clim_arr, plot_name,
-#                     time_labels=time_label,
-#                     log_map=true,
-#                     Npixels=2048,
-#                     dpi=dpi,
-#                     origin="lower",
-#                     Ncols=2,
-#                     Nrows=3
-#                 )
+plot_multiple_allsky(filenames, im_cmap, cb_label, clim_arr, plot_name,
+                    time_labels=time_label,
+                    log_map=true,
+                    Npixels=2048,
+                    dpi=dpi,
+                    origin="lower",
+                    Ncols=2,
+                    Nrows=3
+                )
 
 
 filenames = map_path * "allsky/" .* ["allsky_synch_Pnu_144MHz_B_sim_slow_1_gal.fits",

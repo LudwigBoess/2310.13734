@@ -17,7 +17,7 @@ end
 
 
 function Bfield_vturb(data, i)
-    √(4π * data["RHO"][i] * GU.rho_cgs) * data["VRMS"][i] * GU.v_cgs #* 0.4
+    √(4π * data["RHO"][i] * GU.rho_cgs) * data["VRMS"][i] * GU.v_cgs
 end
 
 function B_fit(x)
@@ -59,9 +59,6 @@ function run_Bfld_map_of_subfile(subfile, blocks, Bfld_function, Btype)
     B = set_rest_to_zero(pos, B)
     println("\tB done!\tmaximum = $(maximum(B)) muG")
 
-    # map = healpix_map(pos, hsml, m, rho, B, rho, show_progress=false;
-    #     center, kernel, Nside)
-    
     map = healpix_map(pos, hsml, m, rho, B, rho, show_progress=false;
         center, kernel, Nside)
 
@@ -74,7 +71,6 @@ function run_Bfld_map_of_subfile(subfile, blocks, Bfld_function, Btype)
     data = nothing
     GC.gc()
     println("\tAfter GC: Available Memory: $(Sys.free_memory() / 2^20) MB -> $( Sys.free_memory() / Sys.total_memory() * 100) %")
-
 
     return map
 end
@@ -90,7 +86,6 @@ function Bfld_map_of_subfile(subfile)
     elseif Bfield_flag == 4
         return run_Bfld_map_of_subfile(subfile, ["RHO"], Bfield_FF, "ff")
     elseif Bfield_flag == 5
-        # return run_Bfld_map_of_subfile(subfile, ["RHO"], Bfield_Caretti, "dyn_l")
         return run_Bfld_map_of_subfile(subfile, ["RHO"], Bfield_dyn_l, "dyn_l")
     elseif Bfield_flag == 6
         return run_Bfld_map_of_subfile(subfile, ["RHO"], Bfield_dyn_h, "dyn_h")

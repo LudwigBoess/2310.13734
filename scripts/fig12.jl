@@ -1,6 +1,7 @@
 """
     Explanatory figure for emissivity scaling with slope and p_inj
 """
+
 include(joinpath(@__DIR__, "config.jl"))
 
 @info "loading packages"
@@ -102,6 +103,6 @@ q_range = LinRange(4, 6, Nbins)
 
 j_nu = get_phase_map(p_range, q_range, Nbins)
 
-plot_name = plot_path * "Fig09.pdf"
+plot_name = plot_path * "Fig12.pdf"
 
 plot_scaling(q_range, p_range, j_nu, plot_name)

@@ -84,28 +84,9 @@ function plot_phase_map(mass_map, x_lim, y_lim, c_lim, cmap,
         norm=matplotlib.colors.LogNorm(vmin=contour_limits[1], vmax=contour_limits[2]),
         alpha=0.5)
 
-    # # define inset axis with zoomed window
-    # axins = inset_locator.inset_axes(ax,
-    #     width="100%", height="100%",
-    #     bbox_to_anchor=(0.62, 0.035, 0.4, 0.4),
-    #     bbox_transform=ax.transAxes)
-
-
-    # axins.set_xticklabels([])
-    # axins.set_yticklabels([])
-    # axins.set_xticks([])
-    # axins.set_yticks([])
-    # axins.imshow(mass_map,
-    #     norm=matplotlib.colors.LogNorm(vmin=c_lim[1], vmax=c_lim[2]),
-    #     cmap=mass_cmap,
-    #     origin="lower"
-    # )
-
-
     subplot(get_gs(gs, 1, 1))
 
     cax = gca()
-    # cb = colorbar(cont1, cax=cax, use_gridspec=true)
     sm = plt.cm.ScalarMappable(norm=matplotlib.colors.LogNorm(
             vmin=contour_limits[1], vmax=contour_limits[2]),
         cmap=cmap)
@@ -113,8 +94,6 @@ function plot_phase_map(mass_map, x_lim, y_lim, c_lim, cmap,
     cb = colorbar(sm, cax=cax, use_gridspec=true)
     cb.set_label(contour_label)
     cb_ticks_styling!(cb)
-    #cb.ax.yaxis.set_label_coords(3.0, 0.5)
-
 
     subplots_adjust(hspace=0.05, wspace=0.05)
 

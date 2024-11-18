@@ -14,7 +14,6 @@ using PyCall
 cm = pyimport("cmasher")
 
 
-
 Bfield_names = ["Bsim", "beta50", 
     "Pturb",
     "BFF", "dyn_l", "dyn_h"]
@@ -49,8 +48,7 @@ plot_name = plot_path * "Fig05a.pdf"
 plot_image_grid(Nrows, Ncols, files, im_cmap, cb_labels,
     vmin_arr, vmax_arr, plot_name,
     cutoffs=[vmin_arr[1] for i = 1:Ncols],
-    #mask_bad=trues(Nrows * Ncols),
-    upscale=2.5,#0.6,
+    upscale=2.5,
     cb_label_offset=0.6,
     dpi=400,
     transparent=false,
@@ -122,35 +120,6 @@ function plot_radial_B(plot_name)
             ax.set_yticklabels([])
         end
 
-        # if col <= 2
-
-        #     for i_sim = 1:length(sim_names)
-
-        #         fi = data_path * "/" * folders[i_sim] * "/" * Bfield_names[col] * ".dat"
-        #         d = readdlm(fi)
-        #         plot(d[:,1], 1.e6 .* d[:,2], 
-        #             alpha=alpha_ref,
-        #             color=sm2.to_rgba(i_sim), lw=lw,
-        #             label=sim_names[i_sim])
-
-        #     end
-        # end
-
-
-        # if 3 <= col <= 4
-
-        #     for i_sim = 2:2#length(sim_names)
-
-        #         fi = data_path * "/" * folders[i_sim] * "/" * Bfield_names[col] * ".dat"
-        #         d = readdlm(fi)
-        #         plot(d[:,1], 1.e6 .* d[:,2], 
-        #             alpha=alpha_ref,
-        #             color=sm2.to_rgba(i_sim), lw=lw,
-        #             linestyle="--")
-
-        #     end
-        # end
-
         for i_sim = 1:length(sim_names)
 
             fi = data_path * "/" * folders[i_sim] * "/" * Bfield_names[col] * ".dat"
@@ -184,5 +153,5 @@ end
 
 plot_name = plot_path * "Fig05b.pdf"
 
-#plot_radial_B(plot_name)
+plot_radial_B(plot_name)
 

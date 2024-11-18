@@ -1,3 +1,5 @@
+include(joinpath(@__DIR__, "config.jl"))
+
 using Printf
 using DelimitedFiles
 using PyPlot, PyPlotUtility
@@ -9,8 +11,6 @@ function read_histograms(data_file)
 end
 
 function plot_histograms(sim_names, Bfield_names, plot_name)
-
-    data_path = "/Users/ludwigboess/Documents/Code/PaperRepos/2310.13734/data/B_histograms/"
 
     Bfield_models = [L"B_\mathrm{sim}",
                     L"B_{\beta = 50}",
@@ -55,7 +55,7 @@ function plot_histograms(sim_names, Bfield_names, plot_name)
 
         for j = 1:length(Bfield_models)
             sim_name = sim_names[i+1] * "_" * Bfield_names[j]
-            data_file = data_path * "$(sim_name)_B_histograms.txt"
+            data_file = data_path * "B_histograms/$(sim_name)_B_histograms.txt"
             data = readdlm(data_file)
             plot(data[:,1], data[:,2] ./ sum(data[:,2]), label=Bfield_models[j],
                 color=sm2.to_rgba(j), lw=2)

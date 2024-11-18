@@ -109,7 +109,6 @@ function plot_shob_phase_map_compare(fi1, fi2, c_lim,
     close(fig)
 end
 
-data_path = "/Users/ludwigboess/Documents/Code/PaperRepos/2310.13734/data/"
 c_lim = [1.e9, 3.e12]
 fi1 = data_path * "phase_maps/box/phase_map_shob.dat"
 fi2 = data_path * "phase_maps/zoom_inj/phase_map_shob.dat"
